@@ -1,0 +1,21 @@
+#summary Overview of modules and features.
+#labels Featured,Phase-Requirements
+
+= Integrated Desktop =
+  
+  * Currently this key feature does not yet exist.
+
+= Portfolio Optimizer Module =
+
+  * Takes list of symbols and arranges them in most-optimal portfolio (by Sharpe Ratio or Sortino Ratio) based on historical data.
+  * This has a Yahoo Data Downloader built-in.
+
+= Portfolio Simulator Module =
+
+  * Reads Metastock-format data.
+  * Allows simulation of trading in an account, similar to Metastock, Wealth Lab, etc.
+
+= Financial Website Module =
+
+  * Provides an easy-to-use web based site like Yahoo!Finance, Google Finance etc.
+  * Currently this code is running at www.winance.com
