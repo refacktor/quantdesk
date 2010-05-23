@@ -11,7 +11,7 @@
   * Takes list of symbols and arranges them in most-optimal portfolio (by Sharpe Ratio or Sortino Ratio) based on historical data.
   * This has a Yahoo Data Downloader built-in.
 
-== Portfolio Simulator ==
+== Trading Strategy Simulator ==
 
   * Reads Metastock-format data.
   * Allows simulation of trading in an account, similar to Metastock, Wealth Lab, etc.
