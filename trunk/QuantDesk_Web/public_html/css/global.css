@@ -1,0 +1,295 @@
+Body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+}
+
+Br {
+    clear: both;
+}
+
+.Wrapper {
+    width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.Header {
+    width: 1000px;
+    height: 37px;
+    background-color: #6b92d7;
+}
+
+.Header Form {
+    padding-top: 6px;
+    float: left;
+    padding-left: 10px;
+}
+
+.Header Form Input[type=text]{
+    width: 200px;
+    border: 2px solid #3763a2;
+}
+
+.Header .Date {
+    float: right;
+    font-size: 0.9em;
+    color: white;
+    padding-top: 10px;
+    padding-right: 20px;
+}
+/**
+* For the debug frame
+*/
+.Debug {
+    margin-top: 20px;
+    width: 800px;
+    border:1px solid black;
+    padding: 5px;
+    font-size:12px;
+    margin-left: auto;
+    margin-right: auto;
+    overflow: auto;
+}
+
+.Debug .ColLeft {
+    width: 49%;
+    float: left;
+    text-align: right;
+    padding-right: 4px;
+    font-family: monospace;
+}
+
+.Debug .ColRight {
+    width: 50%;
+    float: right;
+    font-family: monospace;
+}
+
+
+/***
+* Stock
+*/
+.Bar {
+    border: 2px solid #efefef;
+    background-color: #f1f1f1;
+    height: 30px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.Bar .Name {
+    padding-top: 4px;
+    padding-left: 5px;
+    font-size: 1.6em;
+    font-weight: bold;
+    float: left;
+    height: 30px;
+}
+
+.Bar .Date {
+    float: right;
+    font-weight: bold;
+    padding-top: 12px;
+    padding-right: 3px;
+}
+
+.Bar .StockBar {
+    float: right;
+    font-size: 1.6em;
+    font-weight: bold;
+    padding-top: 6px;
+    padding-right: 5px;
+}
+
+.Bar .DifferenceBar {
+    float: right;
+    padding-top: 10px;
+    font-weight: bold;
+    font-size: 1.1em;
+    padding-right: 15px;
+    background-repeat: no-repeat;
+    background-position: 0px 0px;
+}
+
+.Bar .Up {
+    color: green;
+}
+
+.Bar .Down {
+    color: red;
+
+}
+
+.ContentWrapper {
+    float: left;
+    width: 498px;
+    padding: 0px;
+    margin: 0px;
+}
+
+.Content {
+    float: left;
+    width: 230px;
+    margin-right: 10px;
+}
+
+.Content .Row {
+    width: 220px;
+    border-bottom: 1px solid #e7ecef;
+    overflow: auto;
+    padding-top: 10px;
+}
+
+.Content .Row .Col1 {
+    font-size: 1.2em;
+    float: left;
+}
+
+.Content .Row .Col2 {
+    font-size: 1.2em;
+    font-weight: bold;
+    float: right;
+}
+
+.Content .RowLong {
+    width: 399px;
+    border-bottom: 1px solid #e7ecef;
+}
+
+.ContentWrapper .RowLong H3 {
+    float: left;
+    padding: 0px;
+    margin-top: 20px;
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-bottom: 0px;
+}
+
+Img {
+    float: left;
+}
+
+Table.Top10 {
+    border-collapse: collapse;
+    width: 460px;
+}
+
+Table.Top10 Td {
+    padding: 4px;
+    border: 1px solid #738aa9;
+}
+
+Table.Top10 Td A {
+    color: black;
+    text-decoration: none;
+}
+
+
+/**
+* Index
+*/
+#SymbolTable {
+    border-collapse: collapse;
+}
+
+#SymbolTable Thead Td {
+    font-weight: bold;
+}
+
+#SymbolTable Td {
+    border: 1px solid #738aa9;
+    padding: 4px;
+}
+
+#SymbolTable Td.R1 {
+    background-color: #f1f1f1;
+}
+
+#SymbolTable Td.R2 {
+    background-color: white;
+}
+
+#SymbolTable TBody Tr {
+    cursor: pointer;
+}
+
+#SymbolTable Td.Col1 {
+    width: 100px;
+}
+
+#SymbolTable Td.Col2 {
+    width: 300px;
+}
+
+#SymbolTable Td.Col3 {
+    width: 100px;
+}
+
+#SymbolTable Td.Col4 {
+    width: 100px;
+}
+
+#SymbolTable Td.Col5 {
+    width: 100px;
+}
+
+#SymbolTable Td.Col6 {
+    width: 100px;
+}
+
+#SymbolTable Td.Col7 {
+    width: 100px;
+}
+
+#SymbolTable Td.Col8 {
+    width: 100px;
+}
+
+#SymbolTable Td.Red {
+    font-weight: bold;
+    color: red;
+}
+
+#SymbolTable Td.Green {
+    font-weight: bold;
+    color: green;
+}
+
+Ul#Pagination {
+    list-style: none;
+    padding: 0px;
+    margin-bottom: 10px;
+    margin-top: 10px;
+    margin-left: 0px;
+    margin-right: 0px;
+    overflow: auto;
+}
+
+Ul#Pagination Li {
+    float: left;
+    border: 1px solid #738aa9;
+    width: 34px;
+    height: 20px;
+    padding-top: 4px;
+    text-align: center;
+    margin-right: 2.4px;
+}
+
+Ul#Pagination A {
+    color: black;
+}
+
+Ul#Pagination Li:Hover {
+    background-color: #cbcbcb;
+}
+
+Ul#Pagination Li.Active {
+    font-weight: bold;
+}
+
+.SearchResults {
+    font-weight: bold;
+    font-size: 1.1em;
+}
