@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!-- ====================================================================== 
+     May 4, 2007 8:54:21 AM                                                        
+
+     project    
+     description
+                   
+     Alex Ramos                                                                
+     ====================================================================== -->
+<project name="project" default="default">
+    <description>
+            description
+    </description>
+
+    <!-- ================================= 
+          target: default              
+         ================================= -->
+    <target name="default" depends="depends" description="--> description">
+        
+		<jar destfile="dist/lib/jmirror.jar" basedir="bin" includes="**/*">
+		</jar>
+
+    	<zip destfile="dist/deploy.zip">
+    		<fileset dir="dist" includes="lib/*"/>
+    		<fileset dir="." includes="lib/*"/>
+    		<fileset dir="dist" includes="*.txt"/>
+    		<fileset dir="doc" includes="*.sh"/>    		
+		</zip>
+
+    	
+    </target>
+
+    <!-- - - - - - - - - - - - - - - - - - 
+          target: depends                      
+         - - - - - - - - - - - - - - - - - -->
+    <target name="depends">
+    </target>
+
+</project>

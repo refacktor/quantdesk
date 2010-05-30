@@ -1,0 +1,29 @@
+# JMirror properties file
+
+# The comma-separated list of possible Form Type values
+FORM_TYPE = 10-K, 10-Q
+
+# FTP settings
+SERVER = ftp.sec.gov
+USERNAME = anonymous
+PASSWORD = edgar@zigabyte.net
+INDEX_FOLDER = edgar/full-index
+DATA_FOLDER = edgar/data
+INDEX_FILE_ZIPPED = master.zip
+INDEX_FILE = master.idx
+MIN_YEAR = 2006
+MAX_YEAR = 2007
+
+# Timeout, seconds
+TIMEOUT = 600
+
+# Destination settings
+INDEX_DESTINATION_FOLDER = E:/full-index
+DATA_DESTINATION_FOLDER = E:/data
+
+# Database settings
+JDBC_DRIVER = com.mysql.jdbc.Driver
+JDBC_URL = jdbc:mysql://localhost:3306/db_ftp?jdbcCompliantTruncation=false
+JDBC_USER = root
+JDBC_PASSWORD = 
+MAX_ROWS_PER_QUERY = 1000
