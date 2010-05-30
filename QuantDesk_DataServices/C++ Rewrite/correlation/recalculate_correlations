@@ -1,0 +1,34 @@
+#!/bin/sh
+date
+cd `dirname $0`
+
+/usr/bin/php dump.php
+
+echo computing... `date`
+./compute
+
+echo 'rm data.db' | at now+1hour
+SQL='mysql -u correlation --password=VZEaQ5dJ stockdata'
+
+echo 'alter table correlations drop index id_stock_1, drop index correlation;' | $SQL
+
+echo importing... `date`
+$SQL < correlations.sql
+
+echo Mirroring correlation rows... `date`
+$SQL <<EOF
+insert into correlations (id_stock_1, id_stock_2, correlation) 
+  select id_stock_2, id_stock_1, correlation from correlations;
+EOF
+
+echo reindexing... `date`
+$SQL <<EOF
+ALTER TABLE correlations
+ADD INDEX id_stock_1 ( id_stock_1 , correlation ),
+ADD INDEX correlation ( correlation );
+EOF
+
+echo 'rm correlations.sql' | at now+1hour
+
+date
+
