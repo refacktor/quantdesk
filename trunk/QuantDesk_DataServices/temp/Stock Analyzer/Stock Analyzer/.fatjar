@@ -1,0 +1,14 @@
+#Fat Jar Configuration File
+#Tue Mar 25 17:59:26 EDT 2008
+onejar.license.required=true
+manifest.classpath=
+manifest.removesigners=true
+onejar.checkbox=false
+jarname=C\:\\Stock Analyzer.jar
+manifest.mergeall=true
+manifest.mainclass=com.portfolioAnalysis.main.PortfolioAnalyzer
+manifest.file=<createnew>
+jarname.isextern=true
+onejar.expand=
+excludes=
+includes=

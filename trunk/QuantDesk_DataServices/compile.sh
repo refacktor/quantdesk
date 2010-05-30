@@ -1,0 +1,1 @@
+javac -d bin -cp lib/gnujaxp.jar:lib/jcommon-0.9.6.jar:lib/jfreechart-0.9.21.jar:lib/metastock.jar:lib/mysql-connector-java-5.0.5.bin:lib/suiterunner-1.0beta6.jar src/com/zigabyte/stock/correlation/ComputeCorrelations.java src/com/zigabyte/stock/correlation/DoubleDataPoint.java
