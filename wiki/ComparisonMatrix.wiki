@@ -1,0 +1,6 @@
+#summary Side-by-side comparison of several free, open-source, and commercial stock market analysis software applications.
+#labels Featured,Phase-Requirements
+
+= Introduction =
+
+the data will go here
