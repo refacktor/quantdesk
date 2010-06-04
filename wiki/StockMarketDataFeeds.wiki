@@ -1,4 +1,4 @@
-#summary Free and low-cost market data feeds
+#summary Free and low-cost stock market data feeds for use with QuantDesk
 #labels Featured,Phase-Deploy,Phase-Support
 
   * Google (free)
