@@ -1,8 +1,8 @@
 #summary Free and low-cost market data feeds
 #labels Featured,Phase-Deploy,Phase-Support
 
-* Google (free)
-* Yahoo!Finance (free)
-* eoddata.com (starts at $9.95/month)
-* xe.com (starts at $540/month)
-* www.databull.com (starts at $89/year)
+  * Google (free)
+  * Yahoo!Finance (free)
+  * eoddata.com (starts at $9.95/month)
+  * xe.com (starts at $540/month)
+  * www.databull.com (starts at $89/year)
