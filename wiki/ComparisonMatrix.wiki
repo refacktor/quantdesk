@@ -1,6 +1,55 @@
 #summary Side-by-side comparison of several free, open-source, and commercial stock market analysis software applications.
 #labels Featured,Phase-Requirements
 
-= Introduction =
+To reduce the risk of re-inventing the wheel, we've done an extensive survey of existing open-source investment software, looking for features that we can "borrow" and incorporate into QuantDesk. We also included commercial software, as way to confirm what features are worth implementing.
 
-the data will go here
+The detailed comparison matrix is found [here].
+
+The following packages were looked at:
+  # [http://www.equis.com/ MetaStock]
+  # [http://www.nirvanasystems.com/oti/ OmniTrader]
+  # [http://www.esignal.com/ Esignal]
+  # [http://www.tssupport.com/multicharts/ MultiChart]
+  # [http://www.sierrachart.com/ Sierra Chart]
+  # [http://www.cqg.com/ CQG]
+  # [http://www.tradesignal.com/ Tradesignal Standard Edition]
+  # [http://www.advancedanalyzer.com/ Advanced Analyzer]
+  # [http://www.amibroker.com/ AmiBroker]
+  # [http://www.ninjatrader.com/ Ninja Trader]
+  # [http://www.prorealtime.com/en/ ProRealTime]
+  # [http://www.axialfinance.com/ Axial Finance]
+  # [http://www.metatrader4.com/ MetaTrader 4]
+  # [http://www.spidersoftwareindia.com/ Spider Software]
+  # [http://www.tradestation.com/ TradeStation]
+  # [http://www.tradermade.com/ Tradermade International Ltd.]
+  # [http://jstock.sourceforge.net/ JStock]
+  # [http://venice.org.nz/ Merchant of Venice]
+  # [http://www.iqpc.com/ Finance IQ]
+  # [http://www.gthoreton.co.uk/ Piggy Market Squeak]
+  # [http://www.wave59.com/ Wave 59]
+  # [http://www.teletrader.com/ TeleTrader Professional Workstation]
+  # [http://eiffel-mas.sourceforge.net/ Eiffel-MAS]
+  # [http://qtstalker.sourceforge.net/ Qtstalker]
+  # [http://www.bloomberg.com/ Bloomberg LP]
+  # [http://www.qudosmarketinsight.com/ Channalyze]
+  # [http://www.edgerater.com/ EdgeRater]
+  # [http://www.iguidestocks.com/ iGuideStock]
+  # [http://www.market-analyst.com/ Market Analyst Software]
+  # [http://www.stratasearch.com/ StrataSearch]
+  # [http://www.advancedstocktracker.org/ Advanced Stock Tracker]
+  # [??? WinChart]
+  # [http://timetotrade.eu/ Timetotrade]
+  # [http://www.recognia.com/ Recognia Technical Insight]
+  # [http://www.phoenixai.com.au/ PhoenixAI]
+  # [http://www.optimaltrader.net/ Optimal Trader]
+  # [http://www.chartalert.com/ ChartAlert]
+  # [http://www.aspenres.com/ Aspen Graphics Bloomberg Workstation]
+  # [http://nextick.sourceforge.net/ NexTick]
+  # [http://www.altreva.com/ Adaptive Modeler]
+  # [http://www.atrader.org/ ATRADER]
+  # [http://www.marketfilters.com/ Market Filters]
+  # [??? StockWrap]
+  # [http://www.xtick.com/ XTick]
+  # [http://www.aspenres.com/ Aspen Graphics Webchart]
+  # [http://www.fxglive.com/ FXGraph]
+  # [http://ta-lib.org/ TA-Lib]
