@@ -1,7 +1,7 @@
 #summary Side-by-side comparison of several free, open-source, and commercial stock market analysis software applications.
 #labels Featured,Phase-Requirements
 
-To reduce the risk of re-inventing the wheel, we've done an extensive survey of existing open-source investment software, looking for features that we can "borrow" and incorporate into QuantDesk. We also included commercial software, as way to confirm what features are worth implementing.
+To reduce the risk of re-inventing the wheel, we've done an extensive survey of existing open-source investment software, looking for features that we can "borrow" and incorporate into `QuantDesk`. We also included commercial software, as way to confirm what features are worth implementing.
 
 The detailed comparison matrix is found [here].
 
