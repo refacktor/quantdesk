@@ -1,20 +1,27 @@
 package org.zigabyte.quantdesk;
-
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.layout.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.FormAttachment;
+import org.eclipse.swt.layout.FormData;
+import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.List;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Text;
 import org.yccheok.jstock.engine.Country;
 import org.yccheok.jstock.engine.Stock;
-import org.yccheok.jstock.engine.Symbol;
 
 public class BasicScreenTab extends Composite {
 	
 	private FormLayout layout;
 	private AnalyzerUI mainUI;
-	private final Map<String, Stock> found = new HashMap<String, Stock>();
 	private final EasyScreens screens = new EasyScreens();
 	
 	public BasicScreenTab(Composite parent, AnalyzerUI main) {
@@ -188,7 +195,6 @@ public class BasicScreenTab extends Composite {
 		@Override
 		public void run() {
 			System.out.println("Number of stocks: " + mainUI.stocks.size());
-			found.clear();
 			mainUI.display.asyncExec(new Runnable() {
 				public void run() {
 					mainUI.scanTable.clearAll();
@@ -206,19 +212,9 @@ public class BasicScreenTab extends Composite {
 						System.out.println("Stock " + stock.getCode().toString() + " matches");
 						MyYahooStockServer summary = new MyYahooStockServer(Country.UnitedState);
 						stock = summary.getStock(stock.getCode());
-						String[] rowData = new String[] {
-							"",
-							"",
-							stock.getCode().toString(),
-							stock.getIndustry().toString(),
-							String.valueOf(stock.getLastPrice()),
-							String.valueOf(stock.getVolume()),
-							String.valueOf(stock.getChangePrice()),
-							String.valueOf(stock.getChangePricePercentage()),
-							String.valueOf(stock.getPrevPrice())
-						};
-						found.put(stock.getCode().toString(), stock);
-						mainUI.display.asyncExec(new DataUpdater(rowData));					}
+						String[] rowData = Utils.getRowString(stock);
+						mainUI.display.asyncExec(new DataUpdater(rowData, mainUI));
+					}
 				}
 				catch (Exception e) {
 				}
@@ -226,21 +222,5 @@ public class BasicScreenTab extends Composite {
 		}
 	}
 	
-	private class DataUpdater extends Thread {
-		String[] data;
-		public DataUpdater(String[] data) {
-			this.data = data;
-		}
-		
-		public void run() {
-			TableItem item = new TableItem(mainUI.scanTable, SWT.NONE);
-			item.setText(data);
-			item.addListener(SWT.Selection, new Listener() {
-				public void handleEvent(Event evt) {
-					TableItem i = (TableItem)evt.widget;
-					mainUI.plotData(found.get(i.getText(2)));
-				}
-			});
-		}
-	}
+	
 }

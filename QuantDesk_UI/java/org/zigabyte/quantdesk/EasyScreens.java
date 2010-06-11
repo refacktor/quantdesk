@@ -1,11 +1,8 @@
 package org.zigabyte.quantdesk;
-
 import java.util.HashMap;
-import java.util.List;
-import java.util.ArrayList;
 import java.util.Map;
 
-import org.yccheok.jstock.engine.Stock;
+import org.mozilla.javascript.Function;
 import org.yccheok.jstock.engine.StockHistoryServer;
 
 public class EasyScreens {
@@ -41,6 +38,12 @@ public class EasyScreens {
 	
 	public boolean stockMatches(String name, StockHistoryServer s) {
 		return screens.get(name).indicatorMatches(s);
+	}
+	
+	public boolean stockMatches(Function f, StockHistoryServer s) {
+		boolean ans = false;
+		
+		return ans;
 	}
 	
 	public String[] getScreeningNames() {

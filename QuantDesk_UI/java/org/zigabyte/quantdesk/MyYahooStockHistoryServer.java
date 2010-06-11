@@ -1,6 +1,6 @@
 package org.zigabyte.quantdesk;
-
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -280,7 +280,14 @@ public class MyYahooStockHistoryServer implements StockHistoryServer {
         String respond = null;
         try {
             httpClient.executeMethod(method);
-            respond = method.getResponseBodyAsString();
+            //respond = method.getResponseBodyAsString();
+            InputStream stream = method.getResponseBodyAsStream();
+            StringBuffer buffer = new StringBuffer();
+            int character;
+            while((character = stream.read()) != -1) {
+            	buffer.append((char)character);
+            }
+            respond = buffer.toString();
         }
         catch (HttpException exp) {
             log.error(null, exp);

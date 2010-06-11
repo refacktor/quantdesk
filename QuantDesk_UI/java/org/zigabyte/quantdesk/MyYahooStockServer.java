@@ -1,3 +1,4 @@
+package org.zigabyte.quantdesk;
 /*
  * JStock - Free Stock Market Software
  * Copyright (C) 2009 Yan Cheng CHEOK <yccheok@yahoo.com>
@@ -40,6 +41,7 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import java.io.InputStream;
 import org.yccheok.jstock.engine.AbstractYahooStockServer;
 import org.yccheok.jstock.engine.Code;
 import org.yccheok.jstock.engine.Country;
@@ -457,7 +459,14 @@ public class MyYahooStockServer extends AbstractYahooStockServer {
         String respond = null;
         try {
             httpClient.executeMethod(method);
-            respond = method.getResponseBodyAsString();
+            //respond = method.getResponseBodyAsString();
+            InputStream stream = method.getResponseBodyAsStream();
+            StringBuffer buffer = new StringBuffer();
+            int character;
+            while((character = stream.read()) != -1) {
+            	buffer.append((char)character);
+            }
+            respond = buffer.toString();
         }
         catch (HttpException exp) {
             log.error(null, exp);

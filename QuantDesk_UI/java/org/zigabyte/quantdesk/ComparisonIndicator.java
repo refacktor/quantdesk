@@ -1,5 +1,4 @@
 package org.zigabyte.quantdesk;
-
 import org.yccheok.jstock.engine.Stock;
 import org.yccheok.jstock.engine.StockHistoryServer;
 

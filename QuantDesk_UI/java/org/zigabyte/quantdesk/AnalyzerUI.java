@@ -1,10 +1,17 @@
 package org.zigabyte.quantdesk;
-
-import java.awt.Graphics2D;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import au.com.bytecode.opencsv.*;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
@@ -30,54 +37,72 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
-import org.yccheok.jstock.engine.Code;
-import org.yccheok.jstock.engine.Country;
-import org.yccheok.jstock.engine.Stock;
-import org.yccheok.jstock.engine.StockHistoryNotFoundException;
-import org.yccheok.jstock.engine.StockHistoryServer;
-import org.yccheok.jstock.engine.StockNotFoundException;
-import org.yccheok.jstock.engine.Symbol;
-import org.jfree.data.time.*;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.CombinedDomainXYPlot;
 import org.jfree.chart.plot.Plot;
-import org.jfree.chart.plot.PlotRenderingInfo;
-import org.jfree.chart.plot.PlotState;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.StandardXYItemRenderer;
 import org.jfree.chart.renderer.xy.XYBarRenderer;
+import org.jfree.data.time.Day;
+import org.jfree.data.time.TimeSeries;
+import org.jfree.data.time.TimeSeriesCollection;
+import org.jfree.data.time.TimeSeriesDataItem;
 import org.jfree.data.xy.XYDataset;
-import org.jfree.experimental.chart.swt.*;
-import org.jfree.experimental.swt.*;
-import com.tictactec.ta.lib.Core;
-import com.tictactec.ta.lib.MInteger;
+import org.jfree.experimental.chart.swt.ChartComposite;
+import org.jfree.util.Log;
+import org.yccheok.jstock.engine.Code;
+import org.yccheok.jstock.engine.Country;
+import org.yccheok.jstock.engine.Stock;
+import org.yccheok.jstock.engine.StockHistoryNotFoundException;
+import org.yccheok.jstock.engine.StockNotFoundException;
+import org.yccheok.jstock.engine.Symbol;
+import org.yccheok.jstock.engine.Stock.Board;
+import org.yccheok.jstock.engine.Stock.Industry;
 
 public class AnalyzerUI {
 	private static final String[] navigationButtons = new String[] {"Update", "Basic", "Advanced", "Watch Lists", "Charting", "Portfolio", "Research", "Trading", "Indicators", "Quotes"};
 	private static final String[] toolButtons = new String[] {"Strength Meter", "Bull:Bear Report", "Market Barometer", "Strategy Guide", "Trader's Dictionary", "Preferences"};
 	private static final String[] researchButtons = new String[] {"Back", "Forward", "Stop", "Refresh"};
-	public List<Stock> stocks;
 	
-	private Table stockInfo;
+	private Table quotesTable;
 	private Plot plot;
 	private ValueAxis timeAxis;
 	private NumberAxis priceAxis;
 	private NumberAxis volumeAxis;
 	private XYDataset priceDataset;
 	private XYDataset volumeDataset;
+	private final Shell shell;
+	private JFreeChart chart;
+	private ChartComposite chartComposite;
 	public TimeSeries priceSeries;
 	public TimeSeries volumeSeries;
-	private JFreeChart chart;
 	public Table scanTable;
-	private int index = 1;
+	public List<Stock> stocks;
+	public Map<String, Stock> stockMap;
 	public final Display display = new Display();
 	
 	public AnalyzerUI() {
-		final Shell shell = new Shell(display);
+		shell = new Shell(display);
+		shell.open();
 		
+		setupComponents();
+		setupListeners();
+		
+		while(!shell.isDisposed()) {
+			if(!display.readAndDispatch()) {
+				display.sleep();
+			}
+		}
+		display.dispose();
+		System.exit(0);
+	}
+	
+	// Note: the tool bar items aren't set here. Check createToolBar
+	private void setupComponents() {
+		shell.setText("Analyzer UI");
 		FormLayout layout = new FormLayout();
 		shell.setLayout(layout);
 		
@@ -114,7 +139,7 @@ public class AnalyzerUI {
 		
 		TabItem advancedTab = new TabItem(leftPaneTabs, SWT.NONE);
 		advancedTab.setText("Advanced");
-		advancedTab.setControl(new AdvancedScreenTab(leftPaneTabs));
+		advancedTab.setControl(new AdvancedScreenTab(leftPaneTabs, this));
 		
 		TabItem watchListTab = new TabItem(leftPaneTabs, SWT.NONE);
 		watchListTab.setText("Watch Lists");
@@ -134,7 +159,6 @@ public class AnalyzerUI {
 		volumeAxis = new NumberAxis("Volume");
 		volumeAxis.setUpperMargin(1.0);
 		XYPlot pricePlot = new XYPlot(priceDataset, timeAxis, priceAxis, new StandardXYItemRenderer());
-		//XYPlot volumePlot = new XYPlot(volumeDataset, timeAxis, volumeAxis, new XYBarRenderer()); 
 		plot = new CombinedDomainXYPlot(timeAxis);
 
 		pricePlot.setDataset(1, volumeDataset);
@@ -143,9 +167,8 @@ public class AnalyzerUI {
 		pricePlot.mapDatasetToRangeAxis(1, 1);
 		
 		((CombinedDomainXYPlot)plot).add(pricePlot);
-		//((CombinedDomainXYPlot)plot).add(volumePlot);
 		chart = new JFreeChart("", plot);
-		ChartComposite chartComposite = new ChartComposite(graphFolder, SWT.NONE, chart);
+		chartComposite = new ChartComposite(graphFolder, SWT.NONE, chart);
 		graphItem.setControl(chartComposite);
 		
 		screeningPane.setWeights(new int[] {20, 80});
@@ -165,72 +188,58 @@ public class AnalyzerUI {
 			column.setText(header);
 			column.pack();
 		}
-		scanTable.addListener(SWT.MouseDown, new Listener() {
-			public void handleEvent(Event evt) {
-				TableItem item = scanTable.getItem(new Point(evt.x, evt.y));
-				for(Stock s : stocks) {
-					if(s.getCode().toString().equals(item.getText(2))) {
-						plotData(s);
-						break;
-					}
-				}
-			}
-		});
+		
 		scanTable.pack();
 		indicatorTab.setControl(scanTable);
 		
 		TabItem quotesTab = new TabItem(infoFolder, SWT.NONE);
 		quotesTab.setText("Quotes");
 		
-		stockInfo = new Table(infoFolder, SWT.SINGLE | SWT.BORDER | SWT.FULL_SELECTION);
-		stockInfo.setLinesVisible(true);
-		stockInfo.setHeaderVisible(true);
+		quotesTable = new Table(infoFolder, SWT.SINGLE | SWT.BORDER | SWT.FULL_SELECTION);
+		quotesTable.setLinesVisible(true);
+		quotesTable.setHeaderVisible(true);
 		for(String header : headers) {
-			TableColumn column = new TableColumn(stockInfo, SWT.NONE);
+			TableColumn column = new TableColumn(quotesTable, SWT.NONE);
 			column.setText(header);
 			column.pack();
 		}
-		stockInfo.pack();
+		quotesTable.pack();
 		
+		readStockData();
 		new StockThread().start();
 		
-		quotesTab.setControl(stockInfo);
+		quotesTab.setControl(quotesTable);
 		
 		pane.setWeights(new int[] {80, 20});
+		
+		pane.pack();
+		shell.pack();
+	}
+	
+	private void setupListeners() {
+		scanTable.addListener(SWT.MouseDown, new Listener() {
+			public void handleEvent(Event evt) {
+				TableItem item = scanTable.getItem(new Point(evt.x, evt.y));
+				plotData(stockMap.get(item.getText(2)));
+			}
+		});
+		
+		quotesTable.addListener(SWT.MouseDown, new Listener() {
+			public void handleEvent(Event evt) {
+				TableItem item = quotesTable.getItem(new Point(evt.x, evt.y));
+				plotData(stockMap.get(item.getText(2)));
+			}
+		});
 		
 		shell.addListener(SWT.Resize, new Listener() {
 			public void handleEvent(Event e) {
 				shell.layout();
 			}
 		});
-		
-		pane.pack();
-		shell.pack();
-		shell.open();
-		
-		while(!shell.isDisposed()) {
-			if(!display.readAndDispatch()) {
-				display.sleep();
-			}
-		}
-		display.dispose();
 	}
 	
 	public void plotData(Stock s) {
-		try {
-			MyYahooStockHistoryServer server = new MyYahooStockHistoryServer(Country.UnitedState, s.getCode());
-			priceSeries.clear();
-			volumeSeries.clear();
-			for(int i = 0; i < server.getNumOfCalendar(); i++) {
-				Calendar date = server.getCalendar(i);
-				Stock data = server.getStock(date);
-				priceSeries.add(new TimeSeriesDataItem(new Day(date.getTime()), data.getLastPrice()));
-				volumeSeries.add(new TimeSeriesDataItem(new Day(date.getTime()), data.getVolume()));
-			}
-			chart.setTitle(s.getSymbol().toString());
-		}
-		catch(StockHistoryNotFoundException ex2) {
-		}
+		display.asyncExec(new PlotThread(s));
 	}
 
 	private Menu createMenu(Shell shell) {
@@ -311,6 +320,7 @@ public class AnalyzerUI {
 						Stock s = summary.getStock(Symbol.newInstance(symbolText));
 						plotData(s);
 						setTableRow(s);
+						updateStocks(s);
 						System.out.println(s);
 					}
 					catch(StockNotFoundException exception) {
@@ -336,32 +346,141 @@ public class AnalyzerUI {
 	
 	private void setTableRow(Stock s) {
 		//"Strength Meter", "Bull:Bear", "Symbol", "Industry", "Close", "Volume", "Price Chg", "% Price Chg", "Prev"
-		String[] data = new String[] {
-				"",
-				"",
-				s.getCode().toString(),
-				s.getIndustry().toString(),
-				String.valueOf(s.getLastPrice()),
-				String.valueOf(s.getVolume()),
-				String.valueOf(s.getChangePrice()),
-				String.valueOf(s.getChangePricePercentage()),
-				String.valueOf(s.getPrevPrice())
-		};
+		String[] data = Utils.getRowString(s);
 		
-		for(TableItem item : stockInfo.getItems()) {
+		for(TableItem item : quotesTable.getItems()) {
 			if(item.getText(2).equals(s.getCode().toString())) {
 				item.setText(data);
 				return;
 			}
 		}
-		TableItem row = new TableItem(stockInfo, SWT.NONE);
+		TableItem row = new TableItem(quotesTable, SWT.NONE);
 		row.setText(data);
 	}
 	
-	private void overplotAnalysis(StockHistoryServer s, int analysis) {
-		Core core = new Core();
-		double[] input = new double[s.getNumOfCalendar()];
-		double[] output = new double[input.length];
+	public synchronized void updateStocks(Stock s) {
+		stockMap.put(s.getCode().toString(), s);
+		for(TableItem item : scanTable.getItems()) {
+			if(item.getText(2).equals(s.getCode().toString())) {
+				String[] data = Utils.getRowString(s);
+				item.setText(data);
+			}
+		}
+		for(TableItem item : quotesTable.getItems()) {
+			if(item.getText(2).equals(s.getCode().toString())) {
+				setTableRow(s);
+			}
+		}
+	}
+	
+	private void writeStockData() {
+		System.out.println("Writing stock data to file.");
+		FileWriter writer = null;
+		try {
+			writer = new FileWriter(new File("stocks.csv"));
+		}
+		catch (IOException e) {
+			return;
+		}
+		CSVWriter csv = new CSVWriter(writer);
+		for(Stock s : stocks) {
+			String[] line = new String[] {
+				s.getCode().toString(),
+				s.getSymbol().toString(),
+				s.getName(),
+				s.getBoard().toString(),
+				s.getIndustry().toString(),
+				String.valueOf(s.getPrevPrice()),
+				String.valueOf(s.getOpenPrice()),
+				String.valueOf(s.getLastPrice()),
+				String.valueOf(s.getHighPrice()),
+				String.valueOf(s.getLowPrice()),
+				String.valueOf(s.getVolume()),
+				String.valueOf(s.getChangePrice()),
+				String.valueOf(s.getChangePricePercentage()),
+				String.valueOf(s.getLastVolume()),
+				String.valueOf(s.getBuyPrice()),
+				String.valueOf(s.getBuyQuantity()),
+				String.valueOf(s.getSellPrice()),
+				String.valueOf(s.getSellQuantity()),
+				String.valueOf(s.getSecondBuyPrice()),
+				String.valueOf(s.getSecondBuyQuantity()),
+				String.valueOf(s.getSecondSellPrice()),
+				String.valueOf(s.getSecondSellQuantity()),
+				String.valueOf(s.getThirdBuyPrice()),
+				String.valueOf(s.getThirdBuyQuantity()),
+				String.valueOf(s.getThirdSellPrice()),
+				String.valueOf(s.getThirdSellQuantity()),
+				s.getCalendar().getTime().toString()
+			};
+			csv.writeNext(line);
+		}
+		System.out.println("All stock data written.");
+		try {
+			csv.close();
+		}
+		catch(IOException e) {
+		}
+	}
+	
+	public void readStockData() {
+		System.out.println("Reading stock data from file.");
+		stocks = new ArrayList<Stock>();
+		stockMap = new HashMap<String, Stock>();
+		FileReader fileReader = null;
+		try {
+			fileReader = new FileReader(new File("stocks.csv"));
+		}
+		catch(IOException e) {
+			return;
+		}
+		CSVReader reader = new CSVReader(fileReader);
+		String[] data;
+		try {
+			while((data = reader.readNext()) != null) {
+				Calendar c = Calendar.getInstance();
+				try {
+					c.setTime(DateFormat.getInstance().parse(data[26]));
+				}
+				catch(ParseException p) {
+					Log.error(null, p);
+				}
+				Stock s = new Stock(
+						Code.newInstance(data[0]),
+						Symbol.newInstance(data[1]),
+						data[2],
+						data[3].equals("Pink Sheet") ? Board.PinkSheet : Board.valueOf(data[3]),
+						Industry.valueOf(data[4]),
+						Double.parseDouble(data[5]),
+						Double.parseDouble(data[6]),
+						Double.parseDouble(data[7]),
+						Double.parseDouble(data[8]),
+						Double.parseDouble(data[9]),
+						Long.parseLong(data[10]),
+						Double.parseDouble(data[11]),
+						Double.parseDouble(data[12]),
+						Integer.parseInt(data[13]),
+						Double.parseDouble(data[14]),
+						Integer.parseInt(data[15]),
+						Double.parseDouble(data[16]),
+						Integer.parseInt(data[17]),
+						Double.parseDouble(data[18]),
+						Integer.parseInt(data[19]),
+						Double.parseDouble(data[20]),
+						Integer.parseInt(data[21]),
+						Double.parseDouble(data[22]),
+						Integer.parseInt(data[23]),
+						Double.parseDouble(data[24]),
+						Integer.parseInt(data[25]),
+						c
+				);
+				stocks.add(s);
+				stockMap.put(s.getCode().toString(), s);
+			}
+			System.out.println("Stocks read.");
+		}
+		catch(IOException e) {
+		}
 	}
 
 	public static void main(String[] args) {
@@ -373,10 +492,48 @@ public class AnalyzerUI {
 		public void run() {
 			try {
 				System.out.println("Starting to scan for stocks");
-				stocks = new MyYahooStockServer(Country.UnitedState).getAllStocks();
+				List<Stock> temp = new MyYahooStockServer(Country.UnitedState).getAllStocks();
+				for(Stock s : temp) {
+					try {
+						MyYahooStockServer server = new MyYahooStockServer(Country.UnitedState);
+						s = server.getStock(s.getSymbol());
+						System.out.println("Updating " + s.getSymbol());
+						updateStocks(s);
+					}
+					catch(Exception e) {
+						continue;
+					}
+				}
 				System.out.println("Finished scanning for stocks");
+				writeStockData();
 			}
 			catch(Exception e) {
+			}
+		}
+	}
+	
+	private class PlotThread extends Thread {
+		
+		private Stock s;
+		
+		public PlotThread(Stock s) {
+			this.s = s;
+		}
+		
+		public void run() {
+			try {
+				MyYahooStockHistoryServer server = new MyYahooStockHistoryServer(Country.UnitedState, s.getCode());
+				priceSeries.clear();
+				volumeSeries.clear();
+				for(int i = 0; i < server.getNumOfCalendar(); i++) {
+					Calendar date = server.getCalendar(i);
+					Stock data = server.getStock(date);
+					priceSeries.add(new TimeSeriesDataItem(new Day(date.getTime()), data.getLastPrice()));
+					volumeSeries.add(new TimeSeriesDataItem(new Day(date.getTime()), data.getVolume()));
+				}
+				chart.setTitle(s.getSymbol().toString());
+			}
+			catch(StockHistoryNotFoundException ex2) {
 			}
 		}
 	}

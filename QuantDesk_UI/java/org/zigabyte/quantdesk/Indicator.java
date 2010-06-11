@@ -1,6 +1,5 @@
 package org.zigabyte.quantdesk;
 
-
 public interface Indicator {
 	public enum NumericType {
 		MAX,

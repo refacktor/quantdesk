@@ -1,5 +1,4 @@
 package org.zigabyte.quantdesk;
-
 import java.util.ArrayList;
 import java.util.List;
 
