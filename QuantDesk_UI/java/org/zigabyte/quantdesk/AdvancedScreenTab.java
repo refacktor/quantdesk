@@ -116,8 +116,7 @@ public class AdvancedScreenTab extends Composite {
 			});
 			Context context = Context.enter();
 			String func = "";
-			func += "var s;\n";
-			func += "function callback(stock) {\n";
+			func += "function callback(stock, history) {\n";
 			func += "return " + script;
 			func += "\n}";
 			Scriptable scope = context.initStandardObjects();
@@ -137,9 +136,8 @@ public class AdvancedScreenTab extends Composite {
 							e.printStackTrace();
 						}
 						MyYahooStockHistoryServer server = new MyYahooStockHistoryServer(Country.UnitedState, s.getCode());
-						scope.put("s", scope, server);
 						Function f = (Function)o;
-						Object r2 = f.call(context, scope, scope, new Stock[] { s });
+						Object r2 = f.call(context, scope, scope, new Object[] { s, server });
 						if(r2 instanceof Boolean && (Boolean)r2 && !mainUI.display.isDisposed()) {
 							mainUI.display.asyncExec(new DataUpdater(s, mainUI));
 						}
