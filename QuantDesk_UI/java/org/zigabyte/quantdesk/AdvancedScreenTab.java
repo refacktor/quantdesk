@@ -12,6 +12,7 @@ import org.yccheok.jstock.engine.Country;
 import org.yccheok.jstock.engine.Duration;
 import org.yccheok.jstock.engine.Stock;
 import org.yccheok.jstock.engine.StockHistoryNotFoundException;
+import org.yccheok.jstock.engine.StockNotFoundException;
 
 public class AdvancedScreenTab extends Composite {
 	
@@ -74,7 +75,6 @@ public class AdvancedScreenTab extends Composite {
 		execute.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				shouldStop = false;
-				System.out.println("Widget " + e.widget + " selected.  Text is: " + jsArea.getText());
 				new ScanningThread(jsArea.getText()).start();
 			}
 		});
@@ -118,13 +118,10 @@ public class AdvancedScreenTab extends Composite {
 			String func = "";
 			func += "var s;\n";
 			func += "function callback(stock) {\n";
-			//func += "var s = new Packages.org.zigabyte.quantdesk.MyYahooStockHistoryServer(Packages.org.yccheok.jstock.engine.Country.UnitedState, stock.code);\n";
 			func += "return " + script;
-			func += "}";
+			func += "\n}";
 			Scriptable scope = context.initStandardObjects();
-			System.out.println("Calling code:\n" + func);
 			Object result = context.evaluateString(scope, func, "<cmd>", 1, null);
-			System.out.println("Result 1: " + result);
 			Object o = scope.get("callback", scope);
 			if(o instanceof Function) {
 				for(Stock s : mainUI.stocks) {
@@ -132,14 +129,19 @@ public class AdvancedScreenTab extends Composite {
 						return;
 					}
 					try {
-						MyYahooStockHistoryServer server = new MyYahooStockHistoryServer(Country.UnitedState, s.getCode(), Duration.getTodayDurationByYears(1));
+						MyYahooStockServer stockServer = new MyYahooStockServer(Country.UnitedState);
+						try {
+							s = stockServer.getStock(s.getCode());
+						} catch (StockNotFoundException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						MyYahooStockHistoryServer server = new MyYahooStockHistoryServer(Country.UnitedState, s.getCode());
 						scope.put("s", scope, server);
 						Function f = (Function)o;
 						Object r2 = f.call(context, scope, scope, new Stock[] { s });
-						System.out.println("Result 2: " + r2 + " stock: " + s.getCode());
-						if(r2 instanceof Boolean && (Boolean)r2) {
-							String[] rowData = Utils.getRowString(s);
-							mainUI.display.asyncExec(new DataUpdater(rowData, mainUI));
+						if(r2 instanceof Boolean && (Boolean)r2 && !mainUI.display.isDisposed()) {
+							mainUI.display.asyncExec(new DataUpdater(s, mainUI));
 						}
 					}
 					catch(StockHistoryNotFoundException ex) {

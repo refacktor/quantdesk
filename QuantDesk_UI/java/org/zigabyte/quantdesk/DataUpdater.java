@@ -4,6 +4,9 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TableItem;
+import org.yccheok.jstock.engine.Country;
+import org.yccheok.jstock.engine.Stock;
+import org.yccheok.jstock.engine.StockNotFoundException;
 
 public class DataUpdater extends Thread {
 	private String[] data;
@@ -14,14 +17,18 @@ public class DataUpdater extends Thread {
 		this.mainUI = mainUI;
 	}
 	
+	public DataUpdater(Stock stock, AnalyzerUI mainUI) {
+		MyYahooStockServer server = new MyYahooStockServer(Country.UnitedState);
+		try {
+			this.data = Utils.getRowString(server.getStock(stock.getCode()));
+		} catch (StockNotFoundException e) {
+			e.printStackTrace();
+		}
+		this.mainUI = mainUI;
+	}
+	
 	public void run() {
 		TableItem item = new TableItem(mainUI.scanTable, SWT.NONE);
 		item.setText(data);
-		/*item.addListener(SWT.Selection, new Listener() {
-			public void handleEvent(Event evt) {
-				TableItem i = (TableItem)evt.widget;
-				mainUI.plotData(mainUI.stockMap.get(i.getText(2)));
-			}
-		});*/
 	}
 }

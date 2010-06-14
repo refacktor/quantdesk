@@ -210,10 +210,7 @@ public class BasicScreenTab extends Composite {
 					System.out.println("Scanning stock " + stock.getCode() + " " + i + " " + mainUI.stocks.size());
 					if(screens.stockMatches(name, new MyYahooStockHistoryServer(Country.UnitedState, stock.getCode()))) {
 						System.out.println("Stock " + stock.getCode().toString() + " matches");
-						MyYahooStockServer summary = new MyYahooStockServer(Country.UnitedState);
-						stock = summary.getStock(stock.getCode());
-						String[] rowData = Utils.getRowString(stock);
-						mainUI.display.asyncExec(new DataUpdater(rowData, mainUI));
+						mainUI.display.asyncExec(new DataUpdater(stock, mainUI));
 					}
 				}
 				catch (Exception e) {
