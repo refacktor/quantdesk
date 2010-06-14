@@ -60,7 +60,7 @@ import org.yccheok.jstock.engine.Stock.Industry;
  */
 public class MyYahooStockServer extends AbstractYahooStockServer {
 	
-	private static final String YAHOO_STOCK_FORMAT = "&f=snxspsosl1shsgsvsc1sp2sk3sbsb6sasa5sd1t1";
+	private static final String YAHOO_STOCK_FORMAT = "&f=snsxspsosl1shsgsvsc1sp2sk3sbsb6sasa5sd1st1sdsy";
 	private static final int MAX_STOCK_PER_ITERATION = 180;
 	private static final int NUM_OF_RETRY = 2;
 	private static final double STABILITY_RATE = 90.0;
@@ -313,7 +313,7 @@ public class MyYahooStockServer extends AbstractYahooStockServer {
                     continue;
                 }
 
-                final List<Stock> tmpStocks = YahooStockFormat.getInstance().parse(respond);
+                final List<Stock> tmpStocks = org.zigabyte.quantdesk.Utils.parse(respond); //YahooStockFormat.getInstance().parse(respond);
                 if (tmpStocks.size() != MAX_STOCK_PER_ITERATION) {
                     if (retry == (NUM_OF_RETRY - 1)) {
                         assert(expectedSymbols.size() == MAX_STOCK_PER_ITERATION);
@@ -398,7 +398,7 @@ public class MyYahooStockServer extends AbstractYahooStockServer {
             if (respond == null) {
                 continue;
             }
-            final List<Stock> tmpStocks = YahooStockFormat.getInstance().parse(respond);
+            final List<Stock> tmpStocks = org.zigabyte.quantdesk.Utils.parse(respond); //YahooStockFormat.getInstance().parse(respond);
             if (tmpStocks.size() != remainder) {
                 if (retry == (NUM_OF_RETRY - 1)) {
                     final int currSize = tmpStocks.size();
@@ -508,7 +508,8 @@ public class MyYahooStockServer extends AbstractYahooStockServer {
             if (respond == null) {
                 continue;
             }
-            final List<Stock> stocks = YahooStockFormat.getInstance().parse(respond);
+            final List<Stock> stocks = org.zigabyte.quantdesk.Utils.parse(respond); //YahooStockFormat.getInstance().parse(respond);
+            org.zigabyte.quantdesk.Utils.parse(respond);
 
             if (stocks.size() == 1) {
                 return stocks.get(0);

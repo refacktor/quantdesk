@@ -2,18 +2,20 @@ package org.zigabyte.quantdesk;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -29,9 +31,6 @@ import org.yccheok.jstock.engine.StockNotFoundException;
 import org.yccheok.jstock.engine.StockServer;
 import org.yccheok.jstock.engine.Symbol;
 import org.yccheok.jstock.engine.Utils;
-import org.yccheok.jstock.engine.YahooStockServer;
-import org.yccheok.jstock.gui.JStockOptions;
-import org.yccheok.jstock.gui.MainFrame;
 
 
 public class MyYahooStockHistoryServer implements StockHistoryServer {
@@ -40,13 +39,14 @@ public class MyYahooStockHistoryServer implements StockHistoryServer {
 	private static final Log log = LogFactory.getLog(AbstractYahooStockHistoryServer.class);
 	private static final Duration DEFAULT_HISTORY_DURATION =  Duration.getTodayDurationByYears(10);
 	
-	private Calendar from;
-	private Calendar to;
 	public Map<SimpleDate, Stock> historyDatabase = new HashMap<SimpleDate, Stock>();
     private List<SimpleDate> simpleDates = new ArrayList<SimpleDate>();
+    private List<SimpleDate> dividendDates = new ArrayList<SimpleDate>();
+    private Map<SimpleDate, Double> dividendDatabase = new HashMap<SimpleDate, Double>();
     private Country country = Country.UnitedState;
     private Code code;
     private Duration duration;
+    private int avgDaysBetweenDividend = 0;
     
     public MyYahooStockHistoryServer(Country country, Code code) throws StockHistoryNotFoundException
     {
@@ -65,6 +65,7 @@ public class MyYahooStockHistoryServer implements StockHistoryServer {
         this.duration = duration;
         try {
             buildHistory(this.code);
+            getDividendInfo();
         }
         catch (java.lang.OutOfMemoryError exp) {
             // Thrown from method.getResponseBodyAsString
@@ -283,9 +284,9 @@ public class MyYahooStockHistoryServer implements StockHistoryServer {
             //respond = method.getResponseBodyAsString();
             InputStream stream = method.getResponseBodyAsStream();
             StringBuffer buffer = new StringBuffer();
-            int character;
-            while((character = stream.read()) != -1) {
-            	buffer.append((char)character);
+            int c;
+            while((c = stream.read()) != -1) {
+            	buffer.append((char)c);
             }
             respond = buffer.toString();
         }
@@ -302,4 +303,128 @@ public class MyYahooStockHistoryServer implements StockHistoryServer {
         }
         return respond;
     }
+	
+	public double max(int period) {
+		double max = Double.MIN_VALUE;
+		int arraySize = simpleDates.size();
+		if(period > arraySize) {
+			period = arraySize;
+		}
+		for(int i = arraySize - period; i < arraySize; i++) {
+			double val = historyDatabase.get(simpleDates.get(i)).getLastPrice();
+			if(val > max) {
+				max = val;
+			}
+		}
+		System.out.println("\tMax: " + max);
+		return max;
+	}
+	
+	public double min(int period) {
+		double min = Double.MAX_VALUE;
+		int arraySize = simpleDates.size();
+		if(period > arraySize) {
+			period = arraySize;
+		}
+		for(int i = arraySize - period; i < arraySize; i++) {
+			double val = historyDatabase.get(simpleDates.get(i)).getLastPrice();
+			if(val < min) {
+				min = val;
+			}
+		}
+		System.out.println("\tMin: " + min);
+		return min;
+	}
+	
+	public double macd(int period) {
+		return 0.0;
+	}
+	
+	public int getDividendLength() {
+		return avgDaysBetweenDividend;
+	}
+	
+	public double getAvgDividendPayment() {
+		double total = 0;
+		int size = dividendDates.size();
+		for(int i = 0; i < size; i++) {
+			total += dividendDatabase.get(dividendDates.get(i));
+		}
+		return size > 0 ? total / size : 0;
+	}
+	
+	public double getLastDividendPayment() {
+		int size = dividendDates.size();
+		return size > 0 ? dividendDatabase.get(dividendDates.get(size - 1)) : 0;
+	}
+	
+	public double getDividendYield() {
+		int size = simpleDates.size() - 1;
+		for(int i = size; i > 0; i--) {
+			double yield = historyDatabase.get(simpleDates.get(i)).getSecondSellPrice();
+			if(yield > 0.0) {
+				return yield;
+			}
+		}
+		return 0.0;
+	}
+	
+	private void getDividendInfo() {
+		StringBuilder buffer = new StringBuilder(YAHOO_ICHART_BASED_URL).append(code.toString());
+		final int endMonth = duration.getEndDate().getMonth();
+        final int endDate = duration.getEndDate().getDate();
+        final int endYear = duration.getEndDate().getYear();
+        final int startMonth = duration.getStartDate().getMonth();
+        final int startDate = duration.getStartDate().getDate();
+        final int startYear = duration.getStartDate().getYear();
+
+        final StringBuilder formatBuilder = new StringBuilder("&d=");
+        formatBuilder.append(endMonth).append("&e=").append(endDate).append("&f=").append(endYear).append("&g=v&a=").append(startMonth).append("&b=").append(startDate).append("&c=").append(startYear).append("&ignore=.csv");
+        
+        buffer.append(formatBuilder);
+        for(int i = 0; i < 2; i++) {
+        	String respond = getResponseBodyAsStringBasedOnProxyAuthOption(buffer.toString());
+        	if(respond != null) {
+        		parseDividend(respond);
+        	}
+        }
+	}
+	
+	private void parseDividend(String response) {
+		String[] lines = response.split("\r\n|\n|\r");
+		SimpleDateFormat format = (SimpleDateFormat)DateFormat.getInstance();
+		format.applyPattern("yyy-MM-dd");
+		dividendDates.clear();
+		dividendDatabase.clear();
+		for(int i = 1; i < lines.length; i++) {
+			String line = lines[i];
+			String[] fields = line.split(",");
+			if(fields.length > 2) {
+				continue;
+			}
+			Calendar c = Calendar.getInstance();
+			try {
+				c.setTime(format.parse(fields[0]));
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			Double dividend = Double.valueOf(fields[1]);
+			SimpleDate date = new SimpleDate(c);
+			dividendDates.add(date);
+			dividendDatabase.put(date, dividend);
+		}
+		int count = 0;
+		long diff = 0;
+		int size = dividendDates.size() - 1;
+		Collections.reverse(dividendDates);
+		for(int i = 0; i < size; i++) {
+			SimpleDate date1 = dividendDates.get(i);
+			SimpleDate date2 = dividendDates.get(i + 1);
+			long days = (date2.getCalendar().getTimeInMillis() - date1.getCalendar().getTimeInMillis()) / 86400000L;
+			diff += days;
+			count++;
+		}
+		avgDaysBetweenDividend = count > 0 ? (int)(diff/count) : 0;
+	}
 }

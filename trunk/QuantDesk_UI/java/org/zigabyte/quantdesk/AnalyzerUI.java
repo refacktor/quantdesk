@@ -1,17 +1,8 @@
 package org.zigabyte.quantdesk;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import au.com.bytecode.opencsv.*;
+import java.util.Observable;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
@@ -52,21 +43,18 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.TimeSeriesDataItem;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.experimental.chart.swt.ChartComposite;
-import org.jfree.util.Log;
-import org.yccheok.jstock.engine.Code;
 import org.yccheok.jstock.engine.Country;
 import org.yccheok.jstock.engine.Stock;
 import org.yccheok.jstock.engine.StockHistoryNotFoundException;
 import org.yccheok.jstock.engine.StockNotFoundException;
 import org.yccheok.jstock.engine.Symbol;
-import org.yccheok.jstock.engine.Stock.Board;
-import org.yccheok.jstock.engine.Stock.Industry;
 
-public class AnalyzerUI {
+public class AnalyzerUI implements UI{
 	private static final String[] navigationButtons = new String[] {"Update", "Basic", "Advanced", "Watch Lists", "Charting", "Portfolio", "Research", "Trading", "Indicators", "Quotes"};
 	private static final String[] toolButtons = new String[] {"Strength Meter", "Bull:Bear Report", "Market Barometer", "Strategy Guide", "Trader's Dictionary", "Preferences"};
 	private static final String[] researchButtons = new String[] {"Back", "Forward", "Stop", "Refresh"};
 	
+	private DataModel model;
 	private Table quotesTable;
 	private Plot plot;
 	private ValueAxis timeAxis;
@@ -84,7 +72,9 @@ public class AnalyzerUI {
 	public Map<String, Stock> stockMap;
 	public final Display display = new Display();
 	
-	public AnalyzerUI() {
+	public AnalyzerUI(DataModel model) {
+		this.model = model;
+		model.addObserver(this);
 		shell = new Shell(display);
 		shell.open();
 		
@@ -97,6 +87,7 @@ public class AnalyzerUI {
 			}
 		}
 		display.dispose();
+		model.stop();
 		System.exit(0);
 	}
 	
@@ -133,9 +124,9 @@ public class AnalyzerUI {
 		
 		SashForm screeningPane = new SashForm(pane, SWT.HORIZONTAL | SWT.BORDER);
 		TabFolder leftPaneTabs = new TabFolder(screeningPane, SWT.BOTTOM);
-		TabItem basicTab = new TabItem(leftPaneTabs, SWT.NONE);
+		/*TabItem basicTab = new TabItem(leftPaneTabs, SWT.NONE);
 		basicTab.setText("Basic");
-		basicTab.setControl(new BasicScreenTab(leftPaneTabs, this));
+		basicTab.setControl(new BasicScreenTab(leftPaneTabs, this));*/
 		
 		TabItem advancedTab = new TabItem(leftPaneTabs, SWT.NONE);
 		advancedTab.setText("Advanced");
@@ -178,7 +169,7 @@ public class AnalyzerUI {
 		TabFolder infoFolder = new TabFolder(pane, SWT.BOTTOM);
 		TabItem indicatorTab = new TabItem(infoFolder, SWT.NONE);
 		indicatorTab.setText("Indicators");
-		String[] headers = new String[] {"Strength Meter", "Bull:Bear", "Symbol", "Industry", "Close", "Volume", "Price Chg", "% Price Chg", "Prev"};
+		String[] headers = new String[] {"Strength Meter", "Bull:Bear", "Symbol", "Industry", "Close", "Volume", "Price Chg", "% Price Chg", "Prev", "Dividend/Share", "Dividend Yield"};
 		
 		scanTable = new Table(infoFolder, SWT.SINGLE | SWT.BORDER | SWT.FULL_SELECTION);
 		scanTable.setLinesVisible(true);
@@ -205,7 +196,6 @@ public class AnalyzerUI {
 		}
 		quotesTable.pack();
 		
-		readStockData();
 		new StockThread().start();
 		
 		quotesTab.setControl(quotesTable);
@@ -239,7 +229,8 @@ public class AnalyzerUI {
 	}
 	
 	public void plotData(Stock s) {
-		display.asyncExec(new PlotThread(s));
+		//display.asyncExec(new PlotThread(s));
+		new PlotThread(s).start();
 	}
 
 	private Menu createMenu(Shell shell) {
@@ -373,118 +364,11 @@ public class AnalyzerUI {
 		}
 	}
 	
-	private void writeStockData() {
-		System.out.println("Writing stock data to file.");
-		FileWriter writer = null;
-		try {
-			writer = new FileWriter(new File("stocks.csv"));
-		}
-		catch (IOException e) {
-			return;
-		}
-		CSVWriter csv = new CSVWriter(writer);
-		for(Stock s : stocks) {
-			String[] line = new String[] {
-				s.getCode().toString(),
-				s.getSymbol().toString(),
-				s.getName(),
-				s.getBoard().toString(),
-				s.getIndustry().toString(),
-				String.valueOf(s.getPrevPrice()),
-				String.valueOf(s.getOpenPrice()),
-				String.valueOf(s.getLastPrice()),
-				String.valueOf(s.getHighPrice()),
-				String.valueOf(s.getLowPrice()),
-				String.valueOf(s.getVolume()),
-				String.valueOf(s.getChangePrice()),
-				String.valueOf(s.getChangePricePercentage()),
-				String.valueOf(s.getLastVolume()),
-				String.valueOf(s.getBuyPrice()),
-				String.valueOf(s.getBuyQuantity()),
-				String.valueOf(s.getSellPrice()),
-				String.valueOf(s.getSellQuantity()),
-				String.valueOf(s.getSecondBuyPrice()),
-				String.valueOf(s.getSecondBuyQuantity()),
-				String.valueOf(s.getSecondSellPrice()),
-				String.valueOf(s.getSecondSellQuantity()),
-				String.valueOf(s.getThirdBuyPrice()),
-				String.valueOf(s.getThirdBuyQuantity()),
-				String.valueOf(s.getThirdSellPrice()),
-				String.valueOf(s.getThirdSellQuantity()),
-				s.getCalendar().getTime().toString()
-			};
-			csv.writeNext(line);
-		}
-		System.out.println("All stock data written.");
-		try {
-			csv.close();
-		}
-		catch(IOException e) {
-		}
-	}
 	
-	public void readStockData() {
-		System.out.println("Reading stock data from file.");
-		stocks = new ArrayList<Stock>();
-		stockMap = new HashMap<String, Stock>();
-		FileReader fileReader = null;
-		try {
-			fileReader = new FileReader(new File("stocks.csv"));
-		}
-		catch(IOException e) {
-			return;
-		}
-		CSVReader reader = new CSVReader(fileReader);
-		String[] data;
-		try {
-			while((data = reader.readNext()) != null) {
-				Calendar c = Calendar.getInstance();
-				try {
-					c.setTime(DateFormat.getInstance().parse(data[26]));
-				}
-				catch(ParseException p) {
-					Log.error(null, p);
-				}
-				Stock s = new Stock(
-						Code.newInstance(data[0]),
-						Symbol.newInstance(data[1]),
-						data[2],
-						data[3].equals("Pink Sheet") ? Board.PinkSheet : Board.valueOf(data[3]),
-						Industry.valueOf(data[4]),
-						Double.parseDouble(data[5]),
-						Double.parseDouble(data[6]),
-						Double.parseDouble(data[7]),
-						Double.parseDouble(data[8]),
-						Double.parseDouble(data[9]),
-						Long.parseLong(data[10]),
-						Double.parseDouble(data[11]),
-						Double.parseDouble(data[12]),
-						Integer.parseInt(data[13]),
-						Double.parseDouble(data[14]),
-						Integer.parseInt(data[15]),
-						Double.parseDouble(data[16]),
-						Integer.parseInt(data[17]),
-						Double.parseDouble(data[18]),
-						Integer.parseInt(data[19]),
-						Double.parseDouble(data[20]),
-						Integer.parseInt(data[21]),
-						Double.parseDouble(data[22]),
-						Integer.parseInt(data[23]),
-						Double.parseDouble(data[24]),
-						Integer.parseInt(data[25]),
-						c
-				);
-				stocks.add(s);
-				stockMap.put(s.getCode().toString(), s);
-			}
-			System.out.println("Stocks read.");
-		}
-		catch(IOException e) {
-		}
-	}
-
+	
 	public static void main(String[] args) {
-		AnalyzerUI a = new AnalyzerUI();
+		StockModel model = new StockModel();
+		AnalyzerUI a = new AnalyzerUI(model);
 	}
 	
 	private class StockThread extends Thread {
@@ -492,20 +376,9 @@ public class AnalyzerUI {
 		public void run() {
 			try {
 				System.out.println("Starting to scan for stocks");
-				List<Stock> temp = new MyYahooStockServer(Country.UnitedState).getAllStocks();
-				for(Stock s : temp) {
-					try {
-						MyYahooStockServer server = new MyYahooStockServer(Country.UnitedState);
-						s = server.getStock(s.getSymbol());
-						System.out.println("Updating " + s.getSymbol());
-						updateStocks(s);
-					}
-					catch(Exception e) {
-						continue;
-					}
-				}
+				stocks = model.getAllStocks();
+				stockMap = model.getStockMap();
 				System.out.println("Finished scanning for stocks");
-				writeStockData();
 			}
 			catch(Exception e) {
 			}
@@ -523,18 +396,43 @@ public class AnalyzerUI {
 		public void run() {
 			try {
 				MyYahooStockHistoryServer server = new MyYahooStockHistoryServer(Country.UnitedState, s.getCode());
-				priceSeries.clear();
-				volumeSeries.clear();
-				for(int i = 0; i < server.getNumOfCalendar(); i++) {
-					Calendar date = server.getCalendar(i);
-					Stock data = server.getStock(date);
-					priceSeries.add(new TimeSeriesDataItem(new Day(date.getTime()), data.getLastPrice()));
-					volumeSeries.add(new TimeSeriesDataItem(new Day(date.getTime()), data.getVolume()));
-				}
-				chart.setTitle(s.getSymbol().toString());
+				display.asyncExec(new PlotDataUpdater(server));
 			}
 			catch(StockHistoryNotFoundException ex2) {
 			}
 		}
+		
+		private class PlotDataUpdater extends Thread {
+			MyYahooStockHistoryServer server;
+			public PlotDataUpdater(MyYahooStockHistoryServer server) {
+				this.server = server;
+			}
+			
+			public void run() {
+				int numCalendar = server.getNumOfCalendar();
+				chart.setTitle(s.getSymbol().toString());
+				TimeSeries tempPrice = new TimeSeries("Price");
+				TimeSeries tempVolume = new TimeSeries("Volume");
+				priceSeries.clear();
+				volumeSeries.clear();
+				for(int i = 0; i < numCalendar; i++) {
+					Calendar date = server.getCalendar(i);
+					Stock data = server.getStock(date);
+					Day day = new Day(date.getTime());
+					double price = data.getLastPrice();
+					long volume = data.getVolume();
+					tempPrice.add(day, price);
+					tempVolume.add(day, volume);
+				}
+				priceSeries.addAndOrUpdate(tempPrice);
+				volumeSeries.addAndOrUpdate(tempVolume);
+			}
+		}
+	}
+
+	@Override
+	public void update(Observable obs, Object arg) {
+		// TODO Auto-generated method stub
+		
 	}
 }
