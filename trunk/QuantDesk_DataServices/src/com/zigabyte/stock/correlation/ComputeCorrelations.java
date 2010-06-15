@@ -16,17 +16,13 @@ public class ComputeCorrelations
 	Statement stmt;
 	Properties props;
 
-	public ComputeCorrelations()
-	{
+	public ComputeCorrelations() {
 		con		= null;
 		stmt	= null;
 		props	= new Properties();
-		try
-		{
+		try	{
 			props.load( new FileInputStream( "config.properties" ) );
-		}
-		catch( Exception e )
-		{
+		} catch( Exception e ) {
 			System.out.println( "Import: " + e.getClass() + " - " + e.getMessage() );
 		}
 	}
