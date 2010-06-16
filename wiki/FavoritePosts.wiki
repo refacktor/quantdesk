@@ -1,4 +1,4 @@
-#summary Bookmarked posts from the [http://finance.groups.yahoo.com/group/quantdesk/ QuantDesk Yahoo group]
+#summary Bookmarked posts from the QuantDesk Yahoo group
 
 = Introduction =
 
