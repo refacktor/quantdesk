@@ -1,8 +1,4 @@
 package org.zigabyte.quantdesk;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.yccheok.jstock.engine.Stock;
 import org.yccheok.jstock.engine.StockHistoryServer;
 
 

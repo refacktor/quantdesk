@@ -1,25 +1,20 @@
 package org.zigabyte.quantdesk;
 
-import javax.swing.SwingUtilities;
 import java.awt.BorderLayout;
-import javax.swing.JPanel;
-import javax.swing.JFrame;
-import java.awt.Dimension;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JMenu;
-import javax.swing.JToolBar;
-import javax.swing.JButton;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-
 import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
 import java.awt.GridLayout;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
-import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JToolBar;
+import javax.swing.SwingUtilities;
 
 public class AnalyzerUISwing extends JFrame {
 

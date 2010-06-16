@@ -21,6 +21,7 @@ package org.zigabyte.quantdesk;
 
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -41,7 +42,6 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import java.io.InputStream;
 import org.yccheok.jstock.engine.AbstractYahooStockServer;
 import org.yccheok.jstock.engine.Code;
 import org.yccheok.jstock.engine.Country;
@@ -49,10 +49,7 @@ import org.yccheok.jstock.engine.Stock;
 import org.yccheok.jstock.engine.StockNotFoundException;
 import org.yccheok.jstock.engine.Symbol;
 import org.yccheok.jstock.engine.Utils;
-import org.yccheok.jstock.engine.YahooStockFormat;
 import org.yccheok.jstock.engine.YahooStockServer;
-import org.yccheok.jstock.engine.Stock.Board;
-import org.yccheok.jstock.engine.Stock.Industry;
 
 /**
  *
@@ -75,7 +72,7 @@ public class MyYahooStockServer extends AbstractYahooStockServer {
     public MyYahooStockServer(Country country) {
         super(country);
         this.country = country;
-        baseURL = this.servers.get(country);
+        baseURL = servers.get(country);
         
         if (baseURL == null) {
             throw new java.lang.IllegalArgumentException("Illegal country as argument (" + country +")");
@@ -508,8 +505,7 @@ public class MyYahooStockServer extends AbstractYahooStockServer {
             if (respond == null) {
                 continue;
             }
-            final List<Stock> stocks = org.zigabyte.quantdesk.Utils.parse(respond); //YahooStockFormat.getInstance().parse(respond);
-            org.zigabyte.quantdesk.Utils.parse(respond);
+            final List<Stock> stocks = org.zigabyte.quantdesk.Utils.parse(respond);
 
             if (stocks.size() == 1) {
                 return stocks.get(0);

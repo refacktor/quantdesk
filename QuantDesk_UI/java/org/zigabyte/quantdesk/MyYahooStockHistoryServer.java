@@ -8,7 +8,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +46,8 @@ public class MyYahooStockHistoryServer implements StockHistoryServer {
     private Code code;
     private Duration duration;
     private int avgDaysBetweenDividend = 0;
+    private static MyYahooStockHistoryServer correlation = null;
+    private static String correlationSymbol = null;
     
     public MyYahooStockHistoryServer(Country country, Code code) throws StockHistoryNotFoundException
     {
@@ -425,6 +426,67 @@ public class MyYahooStockHistoryServer implements StockHistoryServer {
 			diff += days;
 			count++;
 		}
-		avgDaysBetweenDividend = count > 0 ? (int)(diff/count) : 0;
+		avgDaysBetweenDividend = count > 0 ? (int)(diff/count) : Integer.MAX_VALUE;
+	}
+	
+	public double mean() {
+		double sum = 0.0;
+		int size = this.simpleDates.size();
+		for(int i = 0; i < size; i++) {
+			sum += this.getStock(this.getCalendar(i)).getLastPrice();
+		}
+		return sum / size;
+	}
+	
+	public double stddev() {
+		int size = this.simpleDates.size();
+		double mean = this.mean();
+		double total = 0.0;
+		for(int i = 0; i < size; i++) {
+			total += Math.pow(this.getStock(this.getCalendar(i)).getLastPrice() - mean, 2);
+		}
+		return Math.sqrt(total / (size - 1));
+	}
+	
+	public double correlation(String symbol) {
+		if(symbol != null && !symbol.equals(correlationSymbol)) {
+			correlationSymbol = symbol;
+			try {
+				correlation = new MyYahooStockHistoryServer(Country.UnitedState, Code.newInstance(symbol), this.duration);
+			} catch (StockHistoryNotFoundException e) {
+				e.printStackTrace();
+				return 0.0;
+			}
+		}
+		double mean1 = this.mean();
+		double mean2 = correlation.mean();
+		int size = this.simpleDates.size();
+		double sum = 0.0;
+		for(int i = 0, j = 0; i < size; i++, j++) {
+			Calendar d1 = this.getCalendar(i);
+			Calendar d2 = correlation.getCalendar(j);
+			int compare = d1.compareTo(d2);
+			// If the dates don't match, move ahead to find a matching date
+			while(compare != 0) {
+				if(compare < 0) {
+					i++;
+				}
+				else {
+					j++;
+				}
+				if(i > this.getNumOfCalendar() - 1 || j > correlation.getNumOfCalendar() - 1) {
+					return 0.0;
+				}
+				d1 = this.getCalendar(i);
+				d2 = correlation.getCalendar(j);
+				compare = d1.compareTo(d2);
+			}
+			double delta = (this.getStock(d1).getLastPrice() - mean1) * (correlation.getStock(d2).getLastPrice() - mean2);
+			sum += delta;
+		};
+		double denom = (size - 1) * this.stddev() * correlation.stddev();
+		double r = sum / denom;
+		System.out.println("Correlation between " + correlationSymbol + " and " + this.code.toString() + " is: " + r);
+		return r;
 	}
 }
