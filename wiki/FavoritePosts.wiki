@@ -1,0 +1,10 @@
+#summary Bookmarked posts from the [QuantDesk Yahoo group|http://finance.groups.yahoo.com/group/quantdesk/]
+
+= Introduction =
+
+Some posts contain reference or otherwise useful information, so they are worth to be bookmarked.
+
+
+= Details =
+
+* [Issue Tracking|http://finance.groups.yahoo.com/group/quantdesk/message/55]
