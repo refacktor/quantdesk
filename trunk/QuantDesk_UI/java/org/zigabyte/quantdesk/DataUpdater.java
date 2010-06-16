@@ -1,8 +1,6 @@
 package org.zigabyte.quantdesk;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TableItem;
 import org.yccheok.jstock.engine.Country;
 import org.yccheok.jstock.engine.Stock;

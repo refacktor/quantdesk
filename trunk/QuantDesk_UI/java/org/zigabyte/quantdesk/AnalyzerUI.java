@@ -40,7 +40,6 @@ import org.jfree.chart.renderer.xy.XYBarRenderer;
 import org.jfree.data.time.Day;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
-import org.jfree.data.time.TimeSeriesDataItem;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.experimental.chart.swt.ChartComposite;
 import org.yccheok.jstock.engine.Country;
@@ -368,7 +367,7 @@ public class AnalyzerUI implements UI{
 	
 	public static void main(String[] args) {
 		StockModel model = new StockModel();
-		AnalyzerUI a = new AnalyzerUI(model);
+		new AnalyzerUI(model);
 	}
 	
 	private class StockThread extends Thread {

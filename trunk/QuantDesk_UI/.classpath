@@ -25,7 +25,7 @@
 	<classpathentry kind="lib" path="lib/jh.jar"/>
 	<classpathentry kind="lib" path="lib/JHotDraw7.jar"/>
 	<classpathentry kind="lib" path="lib/joda-time-1.6.jar"/>
-	<classpathentry kind="lib" path="lib/jstock.jar"/>
+	<classpathentry kind="lib" path="lib/jstock.jar" sourcepath="C:/Users/karim/Documents/projects/AnalyzerClone"/>
 	<classpathentry kind="lib" path="lib/jxlayer.jar"/>
 	<classpathentry kind="lib" path="lib/l2fprod-common-all.jar"/>
 	<classpathentry kind="lib" path="lib/mail.jar"/>

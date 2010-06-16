@@ -7,11 +7,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.yccheok.jstock.engine.Code;
 import org.yccheok.jstock.engine.Stock;
 import org.yccheok.jstock.engine.Symbol;
-import org.yccheok.jstock.engine.YahooStockFormat;
 import org.yccheok.jstock.engine.Stock.Board;
 import org.yccheok.jstock.engine.Stock.Industry;
 
@@ -131,9 +129,6 @@ public class Utils {
         	
         	long volume = 0;
         	try { volume = Long.valueOf(data[7]); } catch(NumberFormatException nfe) {}
-        	if(volume == 0) {
-        		continue;
-        	}
         	
         	double changePrice = 0.0;
         	try { changePrice = Double.valueOf(data[8]); } catch(NumberFormatException nfe) {}
@@ -176,8 +171,6 @@ public class Utils {
             try {
 				calendar.setTime(format.parse(data[15] + " " + data[16]));
 			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
 			symbol = symbol.replaceAll("\"", "");
 			symbol = symbol.replaceAll(",", "");

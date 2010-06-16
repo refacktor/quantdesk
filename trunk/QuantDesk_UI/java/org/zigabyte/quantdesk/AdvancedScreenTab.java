@@ -1,15 +1,19 @@
 package org.zigabyte.quantdesk;
-import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.layout.*;
+import org.eclipse.swt.layout.FormAttachment;
+import org.eclipse.swt.layout.FormData;
+import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeItem;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.Scriptable;
 import org.yccheok.jstock.engine.Country;
-import org.yccheok.jstock.engine.Duration;
 import org.yccheok.jstock.engine.Stock;
 import org.yccheok.jstock.engine.StockHistoryNotFoundException;
 import org.yccheok.jstock.engine.StockNotFoundException;
@@ -17,7 +21,6 @@ import org.yccheok.jstock.engine.StockNotFoundException;
 public class AdvancedScreenTab extends Composite {
 	
 	private FormLayout layout;
-	private Context cx;
 	private AnalyzerUI mainUI;
 	private boolean shouldStop = false;
 	
@@ -56,7 +59,6 @@ public class AdvancedScreenTab extends Composite {
 		screenTree.setLayoutData(treeData);
 		screenTree.pack();
 		
-		cx = Context.enter();
 		final Text jsArea = new Text(this, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
 		Button execute = new Button(this, SWT.PUSH);
 		execute.setText("Execute");
@@ -120,7 +122,7 @@ public class AdvancedScreenTab extends Composite {
 			func += "return " + script;
 			func += "\n}";
 			Scriptable scope = context.initStandardObjects();
-			Object result = context.evaluateString(scope, func, "<cmd>", 1, null);
+			context.evaluateString(scope, func, "<cmd>", 1, null);
 			Object o = scope.get("callback", scope);
 			if(o instanceof Function) {
 				for(Stock s : mainUI.stocks) {
@@ -132,8 +134,6 @@ public class AdvancedScreenTab extends Composite {
 						try {
 							s = stockServer.getStock(s.getCode());
 						} catch (StockNotFoundException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
 						}
 						MyYahooStockHistoryServer server = new MyYahooStockHistoryServer(Country.UnitedState, s.getCode());
 						Function f = (Function)o;

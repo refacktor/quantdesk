@@ -31,7 +31,7 @@ public class StockModel extends DataModel {
 
 	private Map<String, Stock> stocksMap = null;
 	private List<Stock> stocks = null;
-	private String stockFileLoc = "stocks.csv";
+	private String stockFileLoc = "data" + File.separator + "stocks.csv";
 	private Country country = Country.UnitedState;
 	private UpdateStocksThread updater;
 	
@@ -122,7 +122,6 @@ public class StockModel extends DataModel {
 					writeStockData();
 				}
 				catch(StockNotFoundException snfe) {
-					Log.error(null, snfe);
 				}
 			}
 		}
