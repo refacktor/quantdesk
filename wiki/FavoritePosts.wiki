@@ -1,4 +1,4 @@
-#summary Bookmarked posts from the [QuantDesk Yahoo group|http://finance.groups.yahoo.com/group/quantdesk/]
+#summary Bookmarked posts from the [http://finance.groups.yahoo.com/group/quantdesk/ QuantDesk Yahoo group]
 
 = Introduction =
 
@@ -7,4 +7,4 @@ Some posts contain reference or otherwise useful information, so they are worth 
 
 = Details =
 
-* [Issue Tracking|http://finance.groups.yahoo.com/group/quantdesk/message/55]
+* [http://finance.groups.yahoo.com/group/quantdesk/message/55 Issue Tracking]
