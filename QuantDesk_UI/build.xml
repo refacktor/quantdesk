@@ -1,10 +1,23 @@
 <project name="QuantDesk_UI" default="all" basedir=".">
 
-<property name="SRC" value="./java"/> <!-- directory with source files (*.java) -->
-<property name="LIB" value="./lib"/>  <!-- directory with libraries -->
-<property name="OUT" value="./out"/>  <!-- directory for the compiled sources (*.class) -->
 
-<target name="all" depends="compile,javadoc"/>
+<property name="SRC" value="./java"/>     <!-- directory with source files (*.java) -->
+<property name="LIB" value="./lib"/>      <!-- directory with libraries -->
+<property name="OUT" value="./out"/>      <!-- directory for the compiled sources (*.class) -->
+<property name="DST" value="./distr"/>    <!-- directory for the bundle/distributive (*.jar) -->
+<property name="JDC" value="./javadocs"/> <!-- directory for the generated JavaDoc API documentation (*.html) -->
+
+
+<target name="all" depends="clean,compile,bundle,javadoc"/>
+
+
+<!-- CLEAN: Delete everything that is derived from sources -->
+<target name="clean"> 
+	<delete dir="${OUT}"/>
+	<delete dir="${DST}"/>
+	<delete dir="${JDC}"/>
+</target>
+
 
 <target name="compile">
 	<mkdir dir="${OUT}"/>
@@ -27,17 +40,30 @@
 	</javac>
 </target>
 
+
+<!-- BUNDLE: Package the distributive from the compiled sources -->
+<target name="bundle" depends="compile"> 
+	<mkdir dir="${DST}"/>
+	<jar destfile="${DST}/QuantDesk_UI.jar">
+		<fileset dir="${OUT}"/>
+		<zipgroupfileset dir="${LIB}" includes="**/*.jar" excludes="**/mail.jar,**/jh.jar"/>
+		<manifest>
+			<attribute 
+				name="Main-Class" 
+				value="org.zigabyte.quantdesk.AnalyzerUI"
+			/>
+		</manifest>
+	</jar>
+</target>
+
+
 <target name="javadoc">
-	<javadoc 
-		sourcepath="${SRC}"
-		destdir="./docs/api"
-	>
+	<javadoc sourcepath="${SRC}" destdir="${JDC}">
 		<classpath>
-			<fileset dir="${LIB}">
-        			<include name="**/*.jar"/>
-			</fileset>
+			<fileset dir="${LIB}" includes="**/*.jar"/>
 		</classpath>
 	</javadoc>
 </target>
+
 
 </project>
