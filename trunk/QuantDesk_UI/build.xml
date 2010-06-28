@@ -1,0 +1,22 @@
+<project name="QuantDesk_UI" default="compile" basedir=".">
+<target name="compile">
+	<mkdir dir="./out"/>
+<!--	<echoproperties/> -->
+
+	<property environment="env"/>
+	<echo message="DEBUG: JAVA_HOME ==${env.JAVA_HOME}"/>
+	<echo message="DEBUG: PATH      ==${env.PATH}"/>
+	<javac 
+		srcdir="./java"
+		destdir="./out"
+		source="1.5"
+		target="1.5"
+	>
+	<classpath>
+		<fileset dir="lib">
+        		<include name="**/*.jar"/>
+		</fileset>
+	</classpath>
+	</javac>
+</target>
+</project>
