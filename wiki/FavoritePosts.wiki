@@ -3,3 +3,4 @@
 (some posts contain reference or otherwise useful information, so they are worth to be bookmarked)
 
 * [http://finance.groups.yahoo.com/group/quantdesk/message/55 Issue Tracking]
+* [http://finance.groups.yahoo.com/group/quantdesk/message/122 Continuous integration (Hudson)]
