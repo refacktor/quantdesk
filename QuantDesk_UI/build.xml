@@ -6,8 +6,8 @@
 <property name="OUT" value="./out"/>      <!-- directory for the compiled sources (*.class) -->
 <property name="DST" value="./distr"/>    <!-- directory for the bundle/distributive (*.jar) -->
 <property name="JDC" value="./javadocs"/> <!-- directory for the generated JavaDoc API documentation (*.html) -->
-
-
+<property environment="env"/>
+		
 <target name="all" depends="clean,compile,bundle,javadoc"/>
 
 
@@ -23,7 +23,6 @@
 	<mkdir dir="${OUT}"/>
 	<!-- <echoproperties/> -->
 
-	<property environment="env"/>
 	<echo message="DEBUG: JAVA_HOME ==${env.JAVA_HOME}"/>
 	<echo message="DEBUG: PATH      ==${env.PATH}"/>
 	<javac 
@@ -44,7 +43,7 @@
 <!-- BUNDLE: Package the distributive from the compiled sources -->
 <target name="bundle" depends="compile"> 
 	<mkdir dir="${DST}"/>
-	<jar destfile="${DST}/QuantDesk_UI.jar">
+	<jar destfile="${DST}/QuantDesk_UI.r${env.SVN_REVISION}_b{env.BUILD_NUMBER}.jar">
 		<fileset dir="${OUT}"/>
 		<zipgroupfileset dir="${LIB}" includes="**/*.jar" excludes="**/mail.jar,**/jh.jar"/>
 		<manifest>
