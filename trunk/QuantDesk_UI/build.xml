@@ -1,22 +1,43 @@
-<project name="QuantDesk_UI" default="compile" basedir=".">
+<project name="QuantDesk_UI" default="all" basedir=".">
+
+<property name="SRC" value="./java"/> <!-- directory with source files (*.java) -->
+<property name="LIB" value="./lib"/>  <!-- directory with libraries -->
+<property name="OUT" value="./out"/>  <!-- directory for the compiled sources (*.class) -->
+
+<target name="all" depends="compile,javadoc"/>
+
 <target name="compile">
-	<mkdir dir="./out"/>
-<!--	<echoproperties/> -->
+	<mkdir dir="${OUT}"/>
+	<!-- <echoproperties/> -->
 
 	<property environment="env"/>
 	<echo message="DEBUG: JAVA_HOME ==${env.JAVA_HOME}"/>
 	<echo message="DEBUG: PATH      ==${env.PATH}"/>
 	<javac 
-		srcdir="./java"
-		destdir="./out"
+		srcdir="${SRC}"
+		destdir="${OUT}"
 		source="1.5"
 		target="1.5"
 	>
 	<classpath>
-		<fileset dir="lib">
+		<fileset dir="${LIB}">
         		<include name="**/*.jar"/>
 		</fileset>
 	</classpath>
 	</javac>
 </target>
+
+<target name="javadoc">
+	<javadoc 
+		sourcepath="${SRC}"
+		destdir="./docs/api"
+	>
+		<classpath>
+			<fileset dir="${LIB}">
+        			<include name="**/*.jar"/>
+			</fileset>
+		</classpath>
+	</javadoc>
+</target>
+
 </project>
