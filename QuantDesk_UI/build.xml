@@ -43,7 +43,7 @@
 <!-- BUNDLE: Package the distributive from the compiled sources -->
 <target name="bundle" depends="compile"> 
 	<mkdir dir="${DST}"/>
-	<jar destfile="${DST}/QuantDesk_UI.r${env.SVN_REVISION}_b{env.BUILD_NUMBER}.jar">
+	<jar destfile="${DST}/QuantDesk_UI.r${env.SVN_REVISION}_b${env.BUILD_NUMBER}.jar">
 		<fileset dir="${OUT}"/>
 		<zipgroupfileset dir="${LIB}" includes="**/*.jar" excludes="**/mail.jar,**/jh.jar"/>
 		<manifest>
