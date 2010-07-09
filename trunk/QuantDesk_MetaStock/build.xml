@@ -1,0 +1,58 @@
+<project name="QuantDesk_MetaStock" default="all" basedir=".">
+
+
+<property name="SRC" value="./java"/>     <!-- directory with source files (*.java) -->
+<property name="LIB" value="./lib"/>      <!-- directory with libraries -->
+<property name="OUT" value="./out"/>      <!-- directory for the compiled sources (*.class) -->
+<property name="DST" value="./distr"/>    <!-- directory for the bundle/distributive (*.jar) -->
+<property name="JDC" value="./javadocs"/> <!-- directory for the generated JavaDoc API documentation (*.html) -->
+<property environment="env"/>
+		
+<target name="all" depends="clean,compile,bundle,javadoc"/>
+
+
+<!-- CLEAN: Delete everything that is derived from sources -->
+<target name="clean"> 
+	<delete dir="${OUT}"/>
+	<delete dir="${DST}"/>
+	<delete dir="${JDC}"/>
+</target>
+
+
+<target name="compile">
+	<mkdir dir="${OUT}"/>
+	<javac 
+		srcdir="${SRC}"
+		destdir="${OUT}"
+		source="1.5"
+		target="1.5"
+	>
+	<classpath>
+		<fileset dir="${LIB}">
+        		<include name="**/*.jar"/>
+		</fileset>
+	</classpath>
+	</javac>
+</target>
+
+
+<!-- BUNDLE: Package the distributive from the compiled sources -->
+<target name="bundle" depends="compile"> 
+	<mkdir dir="${DST}"/>
+	<jar destfile="${DST}/QuantDeskMetaStock.r${env.SVN_REVISION}.jar">
+		<fileset dir="${OUT}"/>
+		<zipgroupfileset dir="${LIB}" includes="**/*.jar" excludes="**/mail.jar,**/jh.jar"/>
+	</jar>
+</target>
+
+
+<target name="javadoc">
+	<javadoc sourcepath="${SRC}" destdir="${JDC}">
+		<classpath>
+			<fileset dir="${LIB}" includes="**/*.jar"/>
+		</classpath>
+	</javadoc>
+</target>
+
+
+</project>
