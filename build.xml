@@ -3,8 +3,11 @@
 <target name="all">
 	<echo message="====================================================="/>
 	<ant dir="QuantDesk_Core"/>
+
 <!--	<ant dir="QuantDesk_DataServices"/> -->
-<!--	<ant dir="QuantDesk_EDGAR"/> -->
+
+	<echo message="====================================================="/>
+	<ant dir="QuantDesk_EDGAR"/>
 
 	<echo message="====================================================="/>
 	<ant dir="QuantDesk_MetaStock"/>
