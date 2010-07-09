@@ -1,0 +1,47 @@
+<project name="QuantDesk_Core" default="all" basedir=".">
+
+
+<property name="SRC" value="./java"/>     <!-- directory with source files (*.java) -->
+<property name="OUT" value="./out"/>      <!-- directory for the compiled sources (*.class) -->
+<property name="DST" value="./distr"/>    <!-- directory for the bundle/distributive (*.jar) -->
+<property name="JDC" value="./javadocs"/> <!-- directory for the generated JavaDoc API documentation (*.html) -->
+<property environment="env"/>
+		
+<target name="all" depends="clean,compile,bundle,javadoc"/>
+
+
+<!-- CLEAN: Delete everything that is derived from sources -->
+<target name="clean"> 
+	<delete dir="${OUT}"/>
+	<delete dir="${DST}"/>
+	<delete dir="${JDC}"/>
+</target>
+
+
+<target name="compile">
+	<mkdir dir="${OUT}"/>
+	<javac 
+		srcdir="${SRC}"
+		destdir="${OUT}"
+		source="1.5"
+		target="1.5"
+	>
+	</javac>
+</target>
+
+
+<!-- BUNDLE: Package the distributive from the compiled sources -->
+<target name="bundle" depends="compile"> 
+	<mkdir dir="${DST}"/>
+	<jar destfile="${DST}/QuantDeskCore.r${env.SVN_REVISION}.jar">
+		<fileset dir="${OUT}"/>
+	</jar>
+</target>
+
+
+<target name="javadoc">
+<!--	<javadoc sourcepath="${SRC}" destdir="${JDC}"/> - disabled, nothing to javadoc yet -->
+</target>
+
+
+</project>
