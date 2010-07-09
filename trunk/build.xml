@@ -1,7 +1,8 @@
 <project name="QuantDesk" default="all" basedir=".">
 
 <target name="all">
-<!--	<ant dir="QuantDesk_Core"/> -->
+	<echo message="====================================================="/>
+	<ant dir="QuantDesk_Core"/>
 <!--	<ant dir="QuantDesk_DataServices"/> -->
 <!--	<ant dir="QuantDesk_EDGAR"/> -->
 
