@@ -3,9 +3,9 @@
 <target name="all">
 <!--	<ant dir="QuantDesk_Core"/>
 	<ant dir="QuantDesk_DataServices"/>
-	<ant dir="QuantDesk_EDGAR"/>
+	<ant dir="QuantDesk_EDGAR"/> -->
 	<ant dir="QuantDesk_MetaStock"/>
-	<ant dir="QuantDesk_PortfolioOptimizer"/>
+<!--	<ant dir="QuantDesk_PortfolioOptimizer"/>
 	<ant dir="QuantDesk_StrategyLab"/> -->
 	<ant dir="QuantDesk_UI"/>
 <!--	<ant dir="QuantDesk_Web"/> -->
