@@ -1,39 +1,57 @@
-<?xml version="1.0"?>
-<!-- ====================================================================== 
-     May 4, 2007 8:54:21 AM                                                        
+<project name="QuantDesk_EDGAR" default="all" basedir=".">
 
-     project    
-     description
-                   
-     Alex Ramos                                                                
-     ====================================================================== -->
-<project name="project" default="default">
-    <description>
-            description
-    </description>
 
-    <!-- ================================= 
-          target: default              
-         ================================= -->
-    <target name="default" depends="depends" description="--> description">
-        
-		<jar destfile="dist/lib/jmirror.jar" basedir="bin" includes="**/*">
-		</jar>
+<property name="SRC" value="./src"/>      <!-- directory with source files (*.java) -->
+<property name="LIB" value="./lib"/>      <!-- directory with libraries -->
+<property name="OUT" value="./out"/>      <!-- directory for the compiled sources (*.class) -->
+<property name="DST" value="./distr"/>    <!-- directory for the bundle/distributive (*.jar) -->
+<property name="JDC" value="./javadocs"/> <!-- directory for the generated JavaDoc API documentation (*.html) -->
+<property environment="env"/>
+		
+<target name="all" depends="clean,compile,bundle,javadoc"/>
 
-    	<zip destfile="dist/deploy.zip">
-    		<fileset dir="dist" includes="lib/*"/>
-    		<fileset dir="." includes="lib/*"/>
-    		<fileset dir="dist" includes="*.txt"/>
-    		<fileset dir="doc" includes="*.sh"/>    		
-		</zip>
 
-    	
-    </target>
+<!-- CLEAN: Delete everything that is derived from sources -->
+<target name="clean"> 
+	<delete dir="${OUT}"/>
+	<delete dir="${DST}"/>
+	<delete dir="${JDC}"/>
+</target>
 
-    <!-- - - - - - - - - - - - - - - - - - 
-          target: depends                      
-         - - - - - - - - - - - - - - - - - -->
-    <target name="depends">
-    </target>
+
+<target name="compile">
+	<mkdir dir="${OUT}"/>
+	<javac 
+		srcdir="${SRC}"
+		destdir="${OUT}"
+		source="1.5"
+		target="1.5"
+	>
+		<classpath>
+			<fileset dir="${LIB}">
+        			<include name="**/*.jar"/>
+			</fileset>
+		</classpath>
+	</javac>
+</target>
+
+
+<!-- BUNDLE: Package the distributive from the compiled sources -->
+<target name="bundle" depends="compile"> 
+	<mkdir dir="${DST}"/>
+	<jar destfile="${DST}/${ant.project.name}.r${env.SVN_REVISION}.jar">
+		<fileset dir="${OUT}"/>
+	</jar>
+</target>
+
+
+<target name="javadoc">
+	<javadoc sourcepath="${SRC}" destdir="${JDC}">
+		<classpath>
+			<fileset dir="${LIB}" includes="**/*.jar"/>
+		</classpath>
+	</javadoc>
+</target>
+
 
 </project>
