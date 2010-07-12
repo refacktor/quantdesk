@@ -1,0 +1,65 @@
+<project name="QuantDesk_StrategyLab" default="all" basedir=".">
+
+
+<property name="SRC" value="./java"/>      <!-- directory with source files (*.java) -->
+<property name="LIB" value="./lib"/>      <!-- directory with libraries -->
+<property name="OUT" value="./out"/>      <!-- directory for the compiled sources (*.class) -->
+<property name="DST" value="./distr"/>    <!-- directory for the bundle/distributive (*.jar) -->
+<property name="JDC" value="./javadocs"/> <!-- directory for the generated JavaDoc API documentation (*.html) -->
+<property environment="env"/>
+
+<path id="master-classpath"> <!-- This project depends on the projects in the master-classpath: -->
+	<pathelement path="${BASE}/../../QuantDesk_MetaStock/out"/>
+	<pathelement path="${BASE}/../../QuantDesk_MetaStock/lib/jfreechart-0.9.21.jar"/>
+	<pathelement path="${BASE}/../../QuantDesk_UI/lib/jcommon-1.0.16.jar"/>
+</path>
+		
+<target name="all" depends="clean,compile,bundle,javadoc"/>
+
+
+<!-- CLEAN: Delete everything that is derived from sources -->
+<target name="clean"> 
+	<delete dir="${OUT}"/>
+	<delete dir="${DST}"/>
+	<delete dir="${JDC}"/>
+</target>
+
+
+<target name="compile">
+	<mkdir dir="${OUT}"/>
+	<javac 
+		srcdir="${SRC}"
+		destdir="${OUT}"
+		source="1.5"
+		target="1.5"
+	>
+		<classpath refid="master-classpath"/>
+		<classpath>
+			<fileset dir="${LIB}">
+        			<include name="**/*.jar"/>
+			</fileset>
+		</classpath>
+	</javac>
+</target>
+
+
+<!-- BUNDLE: Package the distributive from the compiled sources -->
+<target name="bundle" depends="compile"> 
+	<mkdir dir="${DST}"/>
+	<jar destfile="${DST}/${ant.project.name}.r${env.SVN_REVISION}.jar">
+		<fileset dir="${OUT}"/>
+	</jar>
+</target>
+
+
+<target name="javadoc">
+	<javadoc sourcepath="${SRC}" destdir="${JDC}">
+		<classpath refid="master-classpath"/>
+		<classpath>
+			<fileset dir="${LIB}" includes="**/*.jar"/>
+		</classpath>
+	</javadoc>
+</target>
+
+
+</project>
