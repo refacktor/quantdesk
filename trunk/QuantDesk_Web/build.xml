@@ -1,0 +1,5 @@
+<project name="QuantDesk_Web" default="all" basedir=".">
+	<target name="all">
+		<echo message="Nothing yet to build in ${ant.project.name}"/>
+	</target>
+</project>
