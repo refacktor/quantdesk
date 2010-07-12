@@ -41,7 +41,7 @@ public class DoubleDataPoint
 		return theChangeFromLastClose1.doubleValue();
 	}
 	/**
-	 * @param changeFromLastClose1 The changeFromLastClose1 to set.
+	 * @param aChangeFromLastClose1 The changeFromLastClose1 to set.
 	 */
 	public void setChangeFromLastClose1(double aChangeFromLastClose1) {
 		this.theChangeFromLastClose1 = new Double( aChangeFromLastClose1 );
@@ -53,7 +53,7 @@ public class DoubleDataPoint
 		return theChangeFromLastClose2.doubleValue();
 	}
 	/**
-	 * @param changeFromLastClose2 The changeFromLastClose2 to set.
+	 * @param aChangeFromLastClose2 The changeFromLastClose2 to set.
 	 */
 	public void setChangeFromLastClose2(double aChangeFromLastClose2) {
 		this.theChangeFromLastClose2 = new Double( aChangeFromLastClose2 );
@@ -65,7 +65,7 @@ public class DoubleDataPoint
 		return theDate;
 	}
 	/**
-	 * @param date The date to set.
+	 * @param aDate The date to set.
 	 */
 	public void setDate(String aDate) {
 		this.theDate = aDate;
