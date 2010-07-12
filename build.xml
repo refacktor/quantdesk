@@ -18,7 +18,8 @@
 	<echo message="====================================================="/>
 	<ant dir="QuantDesk_UI"/>
 
-<!--	<ant dir="QuantDesk_Web"/> -->
+	<echo message="====================================================="/>
+	<ant dir="QuantDesk_Web"/>
 
 	<echo message="====================================================="/>
 	<ant dir="QuantDesk_YahooData"/>
