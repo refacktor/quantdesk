@@ -12,8 +12,8 @@
 
 	<echo message="====================================================="/>
 	<ant dir="QuantDesk_MetaStock"/>
-
-<!--	<ant dir="QuantDesk_StrategyLab"/> -->
+	<echo message="_____________________________________________________"/>
+	<ant dir="QuantDesk_StrategyLab"/>
 
 	<echo message="====================================================="/>
 	<ant dir="QuantDesk_UI"/>
@@ -22,7 +22,7 @@
 
 	<echo message="====================================================="/>
 	<ant dir="QuantDesk_YahooData"/>
-	<echo message="-----------------------------------------------------"/>
+	<echo message="_____________________________________________________"/>
 	<ant dir="QuantDesk_PortfolioOptimizer"/>
 </target>
 
