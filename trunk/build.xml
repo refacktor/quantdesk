@@ -4,7 +4,8 @@
 	<echo message="====================================================="/>
 	<ant dir="QuantDesk_Core"/>
 
-<!--	<ant dir="QuantDesk_DataServices"/> -->
+	<echo message="====================================================="/>
+	<ant dir="QuantDesk_DataServices"/>
 
 	<echo message="====================================================="/>
 	<ant dir="QuantDesk_EDGAR"/>
