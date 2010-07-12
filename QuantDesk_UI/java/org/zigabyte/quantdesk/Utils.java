@@ -174,7 +174,7 @@ public class Utils {
 			}
 			symbol = symbol.replaceAll("\"", "");
 			symbol = symbol.replaceAll(",", "");
-			Stock s = new Stock(
+			Stock s = new QDStock(
 					Code.newInstance(symbol),
 					Symbol.newInstance(name),
 					name,
