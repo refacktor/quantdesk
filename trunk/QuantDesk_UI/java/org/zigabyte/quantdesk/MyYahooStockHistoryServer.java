@@ -31,6 +31,8 @@ import org.yccheok.jstock.engine.StockServer;
 import org.yccheok.jstock.engine.Symbol;
 import org.yccheok.jstock.engine.Utils;
 
+import com.tictactec.ta.lib.MInteger;
+
 
 public class MyYahooStockHistoryServer implements StockHistoryServer {
 
@@ -232,7 +234,7 @@ public class MyYahooStockHistoryServer implements StockHistoryServer {
 
             SimpleDate simpleDate = new SimpleDate(calendar);
 
-            Stock stock = new Stock(
+            Stock stock = new QDStock(
                     code,
                     symbol,
                     name,
@@ -359,17 +361,6 @@ public class MyYahooStockHistoryServer implements StockHistoryServer {
 		return size > 0 ? dividendDatabase.get(dividendDates.get(size - 1)) : 0;
 	}
 	
-	public double getDividendYield() {
-		int size = simpleDates.size() - 1;
-		for(int i = size; i > 0; i--) {
-			double yield = historyDatabase.get(simpleDates.get(i)).getSecondSellPrice();
-			if(yield > 0.0) {
-				return yield;
-			}
-		}
-		return 0.0;
-	}
-	
 	private void getDividendInfo() {
 		StringBuilder buffer = new StringBuilder(YAHOO_ICHART_BASED_URL).append(code.toString());
 		final int endMonth = duration.getEndDate().getMonth();
@@ -397,23 +388,26 @@ public class MyYahooStockHistoryServer implements StockHistoryServer {
 		format.applyPattern("yyy-MM-dd");
 		dividendDates.clear();
 		dividendDatabase.clear();
-		for(int i = 1; i < lines.length; i++) {
-			String line = lines[i];
-			String[] fields = line.split(",");
-			if(fields.length > 2) {
-				continue;
+		// There will be a 404 if there is no dividend info.
+		if(response.indexOf("404 Not Found") == -1) {
+			for(int i = 1; i < lines.length; i++) {
+				String line = lines[i];
+				String[] fields = line.split(",");
+				if(fields.length > 2) {
+					continue;
+				}
+				Calendar c = Calendar.getInstance();
+				try {
+					c.setTime(format.parse(fields[0]));
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				Double dividend = Double.valueOf(fields[1]);
+				SimpleDate date = new SimpleDate(c);
+				dividendDates.add(date);
+				dividendDatabase.put(date, dividend);
 			}
-			Calendar c = Calendar.getInstance();
-			try {
-				c.setTime(format.parse(fields[0]));
-			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			Double dividend = Double.valueOf(fields[1]);
-			SimpleDate date = new SimpleDate(c);
-			dividendDates.add(date);
-			dividendDatabase.put(date, dividend);
 		}
 		int count = 0;
 		long diff = 0;
@@ -429,7 +423,7 @@ public class MyYahooStockHistoryServer implements StockHistoryServer {
 		avgDaysBetweenDividend = count > 0 ? (int)(diff/count) : Integer.MAX_VALUE;
 	}
 	
-	public double mean() {
+	public double getMean() {
 		double sum = 0.0;
 		int size = this.simpleDates.size();
 		for(int i = 0; i < size; i++) {
@@ -438,9 +432,9 @@ public class MyYahooStockHistoryServer implements StockHistoryServer {
 		return sum / size;
 	}
 	
-	public double stddev() {
+	public double getStddev() {
 		int size = this.simpleDates.size();
-		double mean = this.mean();
+		double mean = this.getMean();
 		double total = 0.0;
 		for(int i = 0; i < size; i++) {
 			total += Math.pow(this.getStock(this.getCalendar(i)).getLastPrice() - mean, 2);
@@ -449,6 +443,7 @@ public class MyYahooStockHistoryServer implements StockHistoryServer {
 	}
 	
 	public double correlation(String symbol) {
+		// Store the data for the symbol we are comparing to. Reduce time needed to compare and less server hits.
 		if(symbol != null && !symbol.equals(correlationSymbol)) {
 			correlationSymbol = symbol;
 			try {
@@ -458,10 +453,29 @@ public class MyYahooStockHistoryServer implements StockHistoryServer {
 				return 0.0;
 			}
 		}
-		double mean1 = this.mean();
-		double mean2 = correlation.mean();
+		double mean1 = this.getMean();
+		double mean2 = correlation.getMean();
 		int size = this.simpleDates.size();
 		double sum = 0.0;
+		double[] data1 = new double[this.getNumOfCalendar()];
+		double[] data2 = new double[correlation.getNumOfCalendar()];
+		for(int i = 0; i < this.getNumOfCalendar(); i++) {
+			data1[i] = this.getStock(this.getCalendar(i)).getLastPrice();
+		}
+		for(int i = 0; i < correlation.getNumOfCalendar(); i++) {
+			data2[i] = correlation.getStock(correlation.getCalendar(i)).getLastPrice();
+		}
+		int len = Math.min(this.getNumOfCalendar(), correlation.getNumOfCalendar());
+		MInteger outBegIdx = new MInteger();
+		MInteger outNBElement = new MInteger();
+		double[] output = new double[len];
+		com.tictactec.ta.lib.Core c = new com.tictactec.ta.lib.Core();
+		c.correl(0, len - 1, data1, data2, len - 1, outBegIdx, outNBElement, output);
+		System.out.print("TALIB (" + correlationSymbol + ", " + this.code.toString() + "): " + output[0]);
+		for(int i = 1; i < output.length; i++) {
+			System.out.print(", " + output[i]);
+		}
+		System.out.println();
 		for(int i = 0, j = 0; i < size; i++, j++) {
 			Calendar d1 = this.getCalendar(i);
 			Calendar d2 = correlation.getCalendar(j);
@@ -484,9 +498,55 @@ public class MyYahooStockHistoryServer implements StockHistoryServer {
 			double delta = (this.getStock(d1).getLastPrice() - mean1) * (correlation.getStock(d2).getLastPrice() - mean2);
 			sum += delta;
 		};
-		double denom = (size - 1) * this.stddev() * correlation.stddev();
+		double denom = (size - 1) * this.getStddev() * correlation.getStddev();
 		double r = sum / denom;
 		System.out.println("Correlation between " + correlationSymbol + " and " + this.code.toString() + " is: " + r);
 		return r;
+	}
+	
+	private double covar(double[] one, double[] two) {
+		double ans = 0.0;
+		double[] output = new double[one.length];
+		MInteger outInt = new MInteger();
+		MInteger outElem = new MInteger();
+		com.tictactec.ta.lib.Core c = new com.tictactec.ta.lib.Core();
+		c.beta(0, Math.min(one.length, two.length) - 1, one, two, Math.min(one.length, two.length) - 1, outInt, outElem, output);
+		System.out.println("Covariance: (" + outInt.value + ", " + outElem.value + ")");
+		for(int i = 0; i < output.length; i++) {
+			System.out.print(output[i] + ",");
+		}
+		return output[0];
+	}
+	
+	public double beta(String symbol) {
+		double b = 0.0;
+		if(symbol != null && !symbol.equals(correlationSymbol)) {
+			correlationSymbol = symbol;
+			try {
+				correlation = new MyYahooStockHistoryServer(Country.UnitedState, Code.newInstance(symbol), this.duration);
+			} catch (StockHistoryNotFoundException e) {
+				e.printStackTrace();
+				return 0.0;
+			}
+		}
+		int thisSize = this.getNumOfCalendar();
+		int otherSize = correlation.getNumOfCalendar();
+		double[] lastChangeThis = new double[this.simpleDates.size()];
+		double[] lastChangeRef = new double[correlation.getNumOfCalendar()];
+		for(int i = 0; i < thisSize; i++) {
+			lastChangeThis[i] = this.getStock(this.getCalendar(i)).getLastPrice();
+		}
+		for(int i = 0; i < otherSize; i++) {
+			lastChangeRef[i] = correlation.getStock(correlation.getCalendar(i)).getLastPrice();
+		}
+		int maxLength = Math.min(lastChangeThis.length, lastChangeRef.length);
+		double[] output = new double[maxLength];
+		MInteger outInt = new MInteger();
+		MInteger outElem = new MInteger();
+		com.tictactec.ta.lib.Core c = new com.tictactec.ta.lib.Core();
+		c.beta(0, maxLength - 1, lastChangeThis, lastChangeRef, maxLength - 1, outInt, outElem, output);
+		b = output[0];
+		System.out.println("Beta between " + correlationSymbol + " and " + this.code + " equals " + b);
+		return b;
 	}
 }

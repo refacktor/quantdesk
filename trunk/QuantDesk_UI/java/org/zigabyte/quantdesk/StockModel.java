@@ -33,11 +33,8 @@ public class StockModel extends DataModel {
 	private List<Stock> stocks = null;
 	private String stockFileLoc = "data" + File.separator + "stocks.csv";
 	private Country country = Country.UnitedState;
-	private UpdateStocksThread updater;
 	
 	public StockModel() {
-		//updater = new UpdateStocksThread();
-		//updater.start();
 	}
 	
 	@Override
@@ -131,7 +128,15 @@ public class StockModel extends DataModel {
 	@Override
 	public Stock getStock(String code) {
 		// TODO Auto-generated method stub
-		return stocksMap.get(code);
+		MyYahooStockServer server = new MyYahooStockServer(Country.UnitedState);
+		Stock s;
+		try {
+			s = server.getStock(Code.newInstance(code));
+		} catch (StockNotFoundException e) {
+			return null;
+		}
+		stocksMap.put(code, s);
+		return s;
 	}
 
 	@Override
@@ -204,50 +209,9 @@ public class StockModel extends DataModel {
 		}
 	}
 	
-	private class UpdateStocksThread extends Thread {
-		
-		public void run() {
-			while(true) {
-				try {
-					Thread.sleep(30000);
-				}
-				catch(InterruptedException ie) {
-					return;
-				}
-				System.out.println("Updating stocks...");
-				MyYahooStockServer server = new MyYahooStockServer(country);
-				try {
-					List<Stock> temp = server.getAllStocks();
-					List<Stock> updatedStocks = new ArrayList<Stock>();
-					Map<String, Stock> updatedStockMap = new HashMap<String, Stock>();
-					for(Stock s : temp) {
-						try {
-							System.out.println("Updating stock " + s.getCode());
-							Stock tempStock = server.getStock(s.getCode());
-							updatedStocks.add(tempStock);
-							updatedStockMap.put(tempStock.getCode().toString(), tempStock);
-						} catch(StockNotFoundException snfe) {
-							continue;
-						}
-					}
-					stocks.clear();
-					stocksMap.clear();
-					stocks.addAll(updatedStocks);
-					stocksMap.putAll(updatedStockMap);
-					writeStockData();
-					System.out.println("Finished updating stocks");
-				} catch (StockNotFoundException e) {
-					Log.error(null, e);
-					return;
-				}
-			}
-		}
-	}
-
 	@Override
 	public void stop() {
 		// TODO Auto-generated method stub
-		updater.interrupt();
 	}
 
 }
