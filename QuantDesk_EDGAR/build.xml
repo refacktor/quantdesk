@@ -7,6 +7,10 @@
 <property name="DST" value="./distr"/>    <!-- directory for the bundle/distributive (*.jar) -->
 <property name="JDC" value="./javadocs"/> <!-- directory for the generated JavaDoc API documentation (*.html) -->
 <property environment="env"/>
+
+<path id="lib-classpath">
+	<fileset dir="${LIB}" includes="**/*.jar"/>
+</path>
 		
 <target name="all" depends="clean,compile,bundle,javadoc"/>
 
@@ -27,11 +31,7 @@
 		source="1.5"
 		target="1.5"
 	>
-		<classpath>
-			<fileset dir="${LIB}">
-        			<include name="**/*.jar"/>
-			</fileset>
-		</classpath>
+		<classpath refid="lib-classpath"/>
 	</javac>
 </target>
 
@@ -47,9 +47,7 @@
 
 <target name="javadoc">
 	<javadoc sourcepath="${SRC}" destdir="${JDC}">
-		<classpath>
-			<fileset dir="${LIB}" includes="**/*.jar"/>
-		</classpath>
+		<classpath refid="lib-classpath"/>
 	</javadoc>
 </target>
 
