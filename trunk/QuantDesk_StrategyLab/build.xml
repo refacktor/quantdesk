@@ -13,6 +13,10 @@
 	<pathelement path="${BASE}/../../QuantDesk_MetaStock/lib/jfreechart-0.9.21.jar"/>
 	<pathelement path="${BASE}/../../QuantDesk_UI/lib/jcommon-1.0.16.jar"/>
 </path>
+
+<path id="lib-classpath">
+	<fileset dir="${LIB}" includes="**/*.jar"/>
+</path>
 		
 <target name="all" depends="clean,compile,bundle,javadoc"/>
 
@@ -34,11 +38,7 @@
 		target="1.5"
 	>
 		<classpath refid="master-classpath"/>
-		<classpath>
-			<fileset dir="${LIB}">
-        			<include name="**/*.jar"/>
-			</fileset>
-		</classpath>
+		<classpath refid="lib-classpath"/>
 	</javac>
 </target>
 
@@ -55,9 +55,7 @@
 <target name="javadoc">
 	<javadoc sourcepath="${SRC}" destdir="${JDC}">
 		<classpath refid="master-classpath"/>
-		<classpath>
-			<fileset dir="${LIB}" includes="**/*.jar"/>
-		</classpath>
+		<classpath refid="lib-classpath"/>
 	</javadoc>
 </target>
 
