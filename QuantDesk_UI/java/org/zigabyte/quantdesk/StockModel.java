@@ -164,8 +164,8 @@ public class StockModel extends DataModel {
 		FileWriter writer = null;
 		try {
 			writer = new FileWriter(new File(stockFileLoc));
-		}
-		catch (IOException e) {
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
 			return;
 		}
 		CSVWriter csv = new CSVWriter(writer);
@@ -204,8 +204,8 @@ public class StockModel extends DataModel {
 		System.out.println("All stock data written.");
 		try {
 			csv.close();
-		}
-		catch(IOException e) {
+		} catch(IOException ioe) {
+			ioe.printStackTrace();
 		}
 	}
 	
