@@ -79,26 +79,22 @@ public class MyYahooStockHistoryServer implements StockHistoryServer {
 
 	@Override
 	public Calendar getCalendar(int index) {
-		// TODO Auto-generated method stub
 		return simpleDates.get(index).getCalendar();
 	}
 
 	@Override
 	public long getMarketCapital() {
-		// TODO Auto-generated method stub
-		return 0;
+		return 0; // TODO Auto-generated method stub
 	}
 
 	@Override
 	public int getNumOfCalendar() {
-		// TODO Auto-generated method stub
 		return simpleDates.size();
 	}
 
 	@Override
 	public long getSharesIssued() {
-		// TODO Auto-generated method stub
-		return 0;
+		return 0; // TODO Auto-generated method stub
 	}
 
 	@Override
@@ -399,9 +395,8 @@ public class MyYahooStockHistoryServer implements StockHistoryServer {
 				Calendar c = Calendar.getInstance();
 				try {
 					c.setTime(format.parse(fields[0]));
-				} catch (ParseException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				} catch (ParseException pe) {
+					pe.printStackTrace();
 				}
 				Double dividend = Double.valueOf(fields[1]);
 				SimpleDate date = new SimpleDate(c);
