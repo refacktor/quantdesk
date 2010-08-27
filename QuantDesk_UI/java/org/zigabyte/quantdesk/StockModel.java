@@ -39,7 +39,6 @@ public class StockModel extends DataModel {
 	
 	@Override
 	public List<Stock> getAllStocks() {
-		// TODO Auto-generated method stub
 		if(stocks == null) {
 			stocks = new ArrayList<Stock>();
 			stocksMap = new HashMap<String, Stock>();
@@ -127,7 +126,6 @@ public class StockModel extends DataModel {
 
 	@Override
 	public Stock getStock(String code) {
-		// TODO Auto-generated method stub
 		MyYahooStockServer server = new MyYahooStockServer(Country.UnitedState);
 		Stock s;
 		try {
@@ -141,7 +139,6 @@ public class StockModel extends DataModel {
 
 	@Override
 	public StockHistoryServer getStockData(Stock s) {
-		// TODO Auto-generated method stub
 		try {
 			MyYahooStockHistoryServer server = new MyYahooStockHistoryServer(country, s.getCode());
 			return server;
