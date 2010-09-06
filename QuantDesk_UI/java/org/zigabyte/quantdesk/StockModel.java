@@ -107,11 +107,11 @@ public class StockModel extends DataModel {
 					Log.error(null, fnfe);
 				}
 			}
-			else {
-				MyYahooStockServer m = new MyYahooStockServer(country);
+			else {  
+				MyYahooStockServer m = new MyYahooStockServer(country); 
 				try {
-					List<Stock> temp = m.getAllStocks();
-					for(Stock s : temp) {
+					List<Stock> temp = m.getAllStocks(); 
+					for(Stock s : temp) { 
 						stocks.add(s);
 						stocksMap.put(s.getCode().toString(), s);
 					}
@@ -160,7 +160,9 @@ public class StockModel extends DataModel {
 		System.out.println("Writing stock data to file.");
 		FileWriter writer = null;
 		try {
-			writer = new FileWriter(new File(stockFileLoc));
+			File stockFile = new File(stockFileLoc);
+			Util.ensureFileExists(stockFile);
+			writer = new FileWriter(stockFile);
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 			return;
