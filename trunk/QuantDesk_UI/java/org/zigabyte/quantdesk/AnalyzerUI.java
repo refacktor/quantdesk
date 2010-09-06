@@ -8,7 +8,6 @@ import java.util.*;
 
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.axis.Axis;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.CombinedDomainXYPlot;
@@ -38,29 +37,33 @@ public class AnalyzerUI extends JFrame {
 	private JMenu toolsMenu = null;
 	private JMenu helpMenu = null;
 	private JPanel toolBarPanel = null;
+
 	private JToolBar navigationToolBar = null;
-	private JButton updateButton = null;
-	private JButton basicButton = null;
-	private JButton advancedButton = null;
-	private JButton watchListButton = null;
-	private JButton chartingButton = null;
-	private JButton portfolioButton = null;
-	private JButton researchButton = null;
-	private JButton tradingButton = null;
-	private JButton indicatorsButton = null;
-	private JButton quotesButton = null;
+	private JButton btnUpdate = new JButton("Update");
+	private JButton btnBasic = new JButton("Basic");
+	private JButton btnAdvanced = new JButton("Advanced");
+	private JButton btnWatchLists = new JButton("Watch Lists");
+	private JButton btnCharting = new JButton("Charting");
+	private JButton btnPortfolio = new JButton("Portfolio");
+	private JButton btnResearch = new JButton("Research");
+	private JButton btnTrading = new JButton("Trading");
+	private JButton btnIndicators = new JButton("Indicators");
+	private JButton btnQuotes = new JButton("Quotes");
+
 	private JToolBar toolToolBar = null;
-	private JButton strengthButton = null;
-	private JButton bullBearButton = null;
-	private JButton marketBarometerButton = null;
-	private JButton strategyButton = null;
-	private JButton traderButton = null;
-	private JButton preferencesButton = null;
+	private JButton btnStrengthMeter = new JButton("Strength Meter");
+	private JButton btnBullBearReport = new JButton("Bull:Bear Report");
+	private JButton btnMarketBarometer = new JButton("Market Barometer");
+	private JButton btnStrategyGuide = new JButton("Strategy Guide");
+	private JButton btnTradersDictionary = new JButton("Trader's Dictionary");
+	private JButton btnPreferences = new JButton("Preferences");
+
 	private JToolBar researchToolBar = null;
-	private JButton backButton = null;
-	private JButton forwardButton = null;
-	private JButton stopButton = null;
-	private JButton refreshButton = null;
+	private JButton btnBack = new JButton("Back");
+	private JButton btnForward = new JButton("Forward");
+	private JButton btnStop = new JButton("Stop");
+	private JButton btnRefresh = new JButton("Refresh");
+
 	private JSplitPane mainSplitPane = null;
 	private JSplitPane graphSplitPane = null;
 	private JTabbedPane screenTabs = null;
@@ -84,11 +87,7 @@ public class AnalyzerUI extends JFrame {
 	private JComboBox stockComboBox = null;
 	private TimeSeriesCollection priceDataset;
 	private TimeSeriesCollection volumeDataset;
-	/**
-	 * This method initializes mainMenuBar	
-	 * 	
-	 * @return javax.swing.JMenuBar	
-	 */
+
 	private JMenuBar getMainMenuBar() {
 		if (mainMenuBar == null) {
 			mainMenuBar = new JMenuBar();
@@ -106,11 +105,6 @@ public class AnalyzerUI extends JFrame {
 		return mainMenuBar;
 	}
 
-	/**
-	 * This method initializes fileMenu	
-	 * 	
-	 * @return javax.swing.JMenu	
-	 */
 	private JMenu getFileMenu() {
 		if (fileMenu == null) {
 			fileMenu = new JMenu();
@@ -119,11 +113,6 @@ public class AnalyzerUI extends JFrame {
 		return fileMenu;
 	}
 
-	/**
-	 * This method initializes editMenu	
-	 * 	
-	 * @return javax.swing.JMenu	
-	 */
 	private JMenu getEditMenu() {
 		if (editMenu == null) {
 			editMenu = new JMenu();
@@ -132,11 +121,6 @@ public class AnalyzerUI extends JFrame {
 		return editMenu;
 	}
 
-	/**
-	 * This method initializes viewMenu	
-	 * 	
-	 * @return javax.swing.JMenu	
-	 */
 	private JMenu getViewMenu() {
 		if (viewMenu == null) {
 			viewMenu = new JMenu();
@@ -145,11 +129,6 @@ public class AnalyzerUI extends JFrame {
 		return viewMenu;
 	}
 
-	/**
-	 * This method initializes portfolioMenu	
-	 * 	
-	 * @return javax.swing.JMenu	
-	 */
 	private JMenu getPortfolioMenu() {
 		if (portfolioMenu == null) {
 			portfolioMenu = new JMenu();
@@ -158,11 +137,6 @@ public class AnalyzerUI extends JFrame {
 		return portfolioMenu;
 	}
 
-	/**
-	 * This method initializes quotesMenu	
-	 * 	
-	 * @return javax.swing.JMenu	
-	 */
 	private JMenu getQuotesMenu() {
 		if (quotesMenu == null) {
 			quotesMenu = new JMenu();
@@ -171,11 +145,6 @@ public class AnalyzerUI extends JFrame {
 		return quotesMenu;
 	}
 
-	/**
-	 * This method initializes screeningMenu	
-	 * 	
-	 * @return javax.swing.JMenu	
-	 */
 	private JMenu getScreeningMenu() {
 		if (screeningMenu == null) {
 			screeningMenu = new JMenu();
@@ -184,11 +153,6 @@ public class AnalyzerUI extends JFrame {
 		return screeningMenu;
 	}
 
-	/**
-	 * This method initializes researchMenu	
-	 * 	
-	 * @return javax.swing.JMenu	
-	 */
 	private JMenu getResearchMenu() {
 		if (researchMenu == null) {
 			researchMenu = new JMenu();
@@ -197,11 +161,6 @@ public class AnalyzerUI extends JFrame {
 		return researchMenu;
 	}
 
-	/**
-	 * This method initializes favoritesMenu	
-	 * 	
-	 * @return javax.swing.JMenu	
-	 */
 	private JMenu getFavoritesMenu() {
 		if (favoritesMenu == null) {
 			favoritesMenu = new JMenu();
@@ -210,11 +169,6 @@ public class AnalyzerUI extends JFrame {
 		return favoritesMenu;
 	}
 
-	/**
-	 * This method initializes toolsMenu	
-	 * 	
-	 * @return javax.swing.JMenu	
-	 */
 	private JMenu getToolsMenu() {
 		if (toolsMenu == null) {
 			toolsMenu = new JMenu();
@@ -223,11 +177,6 @@ public class AnalyzerUI extends JFrame {
 		return toolsMenu;
 	}
 
-	/**
-	 * This method initializes helpMenu	
-	 * 	
-	 * @return javax.swing.JMenu	
-	 */
 	private JMenu getHelpMenu() {
 		if (helpMenu == null) {
 			helpMenu = new JMenu();
@@ -236,11 +185,6 @@ public class AnalyzerUI extends JFrame {
 		return helpMenu;
 	}
 
-	/**
-	 * This method initializes toolBarPanel	
-	 * 	
-	 * @return javax.swing.JPanel	
-	 */
 	private JPanel getToolBarPanel() {
 		if (toolBarPanel == null) {
 			GridLayout gridLayout = new GridLayout();
@@ -254,328 +198,48 @@ public class AnalyzerUI extends JFrame {
 		return toolBarPanel;
 	}
 
-	/**
-	 * This method initializes navigationToolBar	
-	 * 	
-	 * @return javax.swing.JToolBar	
-	 */
 	private JToolBar getNavigationToolBar() {
 		if (navigationToolBar == null) {
 			navigationToolBar = new JToolBar();
-			navigationToolBar.add(getUpdateButton());
-			navigationToolBar.add(getBasicButton());
-			navigationToolBar.add(getAdvancedButton());
-			navigationToolBar.add(getWatchListButton());
-			navigationToolBar.add(getChartingButton());
-			navigationToolBar.add(getPortfolioButton());
-			navigationToolBar.add(getResearchButton());
-			navigationToolBar.add(getTradingButton());
-			navigationToolBar.add(getIndicatorsButton());
-			navigationToolBar.add(getQuotesButton());
+			navigationToolBar.add(btnUpdate);
+			navigationToolBar.add(btnBasic);
+			navigationToolBar.add(btnAdvanced);
+			navigationToolBar.add(btnWatchLists);
+			navigationToolBar.add(btnCharting);
+			navigationToolBar.add(btnPortfolio);
+			navigationToolBar.add(btnResearch);
+			navigationToolBar.add(btnTrading);
+			navigationToolBar.add(btnIndicators);
+			navigationToolBar.add(btnQuotes);
 		}
 		return navigationToolBar;
 	}
 
-	/**
-	 * This method initializes updateButton	
-	 * 	
-	 * @return javax.swing.JButton	
-	 */
-	private JButton getUpdateButton() {
-		if (updateButton == null) {
-			updateButton = new JButton();
-			updateButton.setText("Update");
-		}
-		return updateButton;
-	}
-
-	/**
-	 * This method initializes basicButton	
-	 * 	
-	 * @return javax.swing.JButton	
-	 */
-	private JButton getBasicButton() {
-		if (basicButton == null) {
-			basicButton = new JButton();
-			basicButton.setText("Basic");
-		}
-		return basicButton;
-	}
-
-	/**
-	 * This method initializes advancedButton	
-	 * 	
-	 * @return javax.swing.JButton	
-	 */
-	private JButton getAdvancedButton() {
-		if (advancedButton == null) {
-			advancedButton = new JButton();
-			advancedButton.setText("Advanced");
-		}
-		return advancedButton;
-	}
-
-	/**
-	 * This method initializes watchListButton	
-	 * 	
-	 * @return javax.swing.JButton	
-	 */
-	private JButton getWatchListButton() {
-		if (watchListButton == null) {
-			watchListButton = new JButton();
-			watchListButton.setText("Watch Lists");
-		}
-		return watchListButton;
-	}
-
-	/**
-	 * This method initializes chartingButton	
-	 * 	
-	 * @return javax.swing.JButton	
-	 */
-	private JButton getChartingButton() {
-		if (chartingButton == null) {
-			chartingButton = new JButton();
-			chartingButton.setText("Charting");
-		}
-		return chartingButton;
-	}
-
-	/**
-	 * This method initializes portfolioButton	
-	 * 	
-	 * @return javax.swing.JButton	
-	 */
-	private JButton getPortfolioButton() {
-		if (portfolioButton == null) {
-			portfolioButton = new JButton();
-			portfolioButton.setText("Portfolio");
-		}
-		return portfolioButton;
-	}
-
-	/**
-	 * This method initializes researchButton	
-	 * 	
-	 * @return javax.swing.JButton	
-	 */
-	private JButton getResearchButton() {
-		if (researchButton == null) {
-			researchButton = new JButton();
-			researchButton.setText("Research");
-		}
-		return researchButton;
-	}
-
-	/**
-	 * This method initializes tradingButton	
-	 * 	
-	 * @return javax.swing.JButton	
-	 */
-	private JButton getTradingButton() {
-		if (tradingButton == null) {
-			tradingButton = new JButton();
-			tradingButton.setText("Trading");
-		}
-		return tradingButton;
-	}
-
-	/**
-	 * This method initializes indicatorsButton	
-	 * 	
-	 * @return javax.swing.JButton	
-	 */
-	private JButton getIndicatorsButton() {
-		if (indicatorsButton == null) {
-			indicatorsButton = new JButton();
-			indicatorsButton.setText("Indicators");
-		}
-		return indicatorsButton;
-	}
-
-	/**
-	 * This method initializes quotesButton	
-	 * 	
-	 * @return javax.swing.JButton	
-	 */
-	private JButton getQuotesButton() {
-		if (quotesButton == null) {
-			quotesButton = new JButton();
-			quotesButton.setText("Quotes");
-		}
-		return quotesButton;
-	}
-
-	/**
-	 * This method initializes toolToolBar	
-	 * 	
-	 * @return javax.swing.JToolBar	
-	 */
 	private JToolBar getToolToolBar() {
 		if (toolToolBar == null) {
 			toolToolBar = new JToolBar();
-			toolToolBar.add(getStrengthButton());
-			toolToolBar.add(getBullBearButton());
-			toolToolBar.add(getMarketBarometerButton());
-			toolToolBar.add(getStrategyButton());
-			toolToolBar.add(getTraderButton());
-			toolToolBar.add(getPreferencesButton());
+			toolToolBar.add(btnStrengthMeter);
+			toolToolBar.add(btnBullBearReport);
+			toolToolBar.add(btnMarketBarometer);
+			toolToolBar.add(btnStrategyGuide);
+			toolToolBar.add(btnTradersDictionary);
+			toolToolBar.add(btnPreferences);
 			toolToolBar.add(getStockComboBox());
 		}
 		return toolToolBar;
 	}
 
-	/**
-	 * This method initializes strengthButton	
-	 * 	
-	 * @return javax.swing.JButton	
-	 */
-	private JButton getStrengthButton() {
-		if (strengthButton == null) {
-			strengthButton = new JButton();
-			strengthButton.setText("Strength Meter");
-		}
-		return strengthButton;
-	}
-
-	/**
-	 * This method initializes bullBearButton	
-	 * 	
-	 * @return javax.swing.JButton	
-	 */
-	private JButton getBullBearButton() {
-		if (bullBearButton == null) {
-			bullBearButton = new JButton();
-			bullBearButton.setText("Bull:Bear Report");
-		}
-		return bullBearButton;
-	}
-
-	/**
-	 * This method initializes marketBarometerButton	
-	 * 	
-	 * @return javax.swing.JButton	
-	 */
-	private JButton getMarketBarometerButton() {
-		if (marketBarometerButton == null) {
-			marketBarometerButton = new JButton();
-			marketBarometerButton.setText("Market Barometer");
-		}
-		return marketBarometerButton;
-	}
-
-	/**
-	 * This method initializes strategyButton	
-	 * 	
-	 * @return javax.swing.JButton	
-	 */
-	private JButton getStrategyButton() {
-		if (strategyButton == null) {
-			strategyButton = new JButton();
-			strategyButton.setText("Strategy Guide");
-		}
-		return strategyButton;
-	}
-
-	/**
-	 * This method initializes traderButton	
-	 * 	
-	 * @return javax.swing.JButton	
-	 */
-	private JButton getTraderButton() {
-		if (traderButton == null) {
-			traderButton = new JButton();
-			traderButton.setText("Trader's Dictionary");
-		}
-		return traderButton;
-	}
-
-	/**
-	 * This method initializes preferencesButton	
-	 * 	
-	 * @return javax.swing.JButton	
-	 */
-	private JButton getPreferencesButton() {
-		if (preferencesButton == null) {
-			preferencesButton = new JButton();
-			preferencesButton.setText("Preferences");
-		}
-		return preferencesButton;
-	}
-
-	/**
-	 * This method initializes researchToolBar	
-	 * 	
-	 * @return javax.swing.JToolBar	
-	 */
 	private JToolBar getResearchToolBar() {
 		if (researchToolBar == null) {
 			researchToolBar = new JToolBar();
-			researchToolBar.add(getBackButton());
-			researchToolBar.add(getForwardButton());
-			researchToolBar.add(getStopButton());
-			researchToolBar.add(getRefreshButton());
+			researchToolBar.add(btnBack);
+			researchToolBar.add(btnForward);
+			researchToolBar.add(btnStop);
+			researchToolBar.add(btnRefresh);
 		}
 		return researchToolBar;
 	}
 
-	/**
-	 * This method initializes backButton	
-	 * 	
-	 * @return javax.swing.JButton	
-	 */
-	private JButton getBackButton() {
-		if (backButton == null) {
-			backButton = new JButton();
-			backButton.setText("Back");
-		}
-		return backButton;
-	}
-
-	/**
-	 * This method initializes forwardButton	
-	 * 	
-	 * @return javax.swing.JButton	
-	 */
-	private JButton getForwardButton() {
-		if (forwardButton == null) {
-			forwardButton = new JButton();
-			forwardButton.setText("Forward");
-		}
-		return forwardButton;
-	}
-
-	/**
-	 * This method initializes stopButton	
-	 * 	
-	 * @return javax.swing.JButton	
-	 */
-	private JButton getStopButton() {
-		if (stopButton == null) {
-			stopButton = new JButton();
-			stopButton.setText("Stop");
-		}
-		return stopButton;
-	}
-
-	/**
-	 * This method initializes refreshButton	
-	 * 	
-	 * @return javax.swing.JButton	
-	 */
-	private JButton getRefreshButton() {
-		if (refreshButton == null) {
-			refreshButton = new JButton();
-			refreshButton.setText("Refresh");
-		}
-		return refreshButton;
-	}
-
-	/**
-	 * This method initializes mainSplitPane	
-	 * 	
-	 * @return javax.swing.JSplitPane	
-	 */
 	private JSplitPane getMainSplitPane() {
 		if (mainSplitPane == null) {
 			mainSplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
@@ -586,11 +250,6 @@ public class AnalyzerUI extends JFrame {
 		return mainSplitPane;
 	}
 
-	/**
-	 * This method initializes graphSplitPane	
-	 * 	
-	 * @return javax.swing.JSplitPane	
-	 */
 	private JSplitPane getGraphSplitPane() {
 		if (graphSplitPane == null) {
 			graphSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
@@ -600,11 +259,6 @@ public class AnalyzerUI extends JFrame {
 		return graphSplitPane;
 	}
 
-	/**
-	 * This method initializes screenTabs	
-	 * 	
-	 * @return javax.swing.JTabbedPane	
-	 */
 	private JTabbedPane getScreenTabs() {
 		if (screenTabs == null) {
 			screenTabs = new JTabbedPane(JTabbedPane.BOTTOM);
@@ -615,11 +269,6 @@ public class AnalyzerUI extends JFrame {
 		return screenTabs;
 	}
 
-	/**
-	 * This method initializes basicPanel	
-	 * 	
-	 * @return javax.swing.JPanel	
-	 */
 	private JPanel getBasicPanel() {
 		if (basicPanel == null) {
 			basicPanel = new BasicTabPanel();
@@ -628,11 +277,6 @@ public class AnalyzerUI extends JFrame {
 		return basicPanel;
 	}
 
-	/**
-	 * This method initializes advancedPanel	
-	 * 	
-	 * @return javax.swing.JPanel	
-	 */
 	private JPanel getAdvancedPanel() {
 		if (advancedPanel == null) {
 			advancedPanel = new AdvancedTabPanel(this);
@@ -641,11 +285,6 @@ public class AnalyzerUI extends JFrame {
 		return advancedPanel;
 	}
 
-	/**
-	 * This method initializes watchListsPanel	
-	 * 	
-	 * @return javax.swing.JPanel	
-	 */
 	private JPanel getWatchListsPanel() {
 		if (watchListsPanel == null) {
 			watchListsPanel = new JPanel();
@@ -654,11 +293,6 @@ public class AnalyzerUI extends JFrame {
 		return watchListsPanel;
 	}
 
-	/**
-	 * This method initializes chartPanel	
-	 * 	
-	 * @return javax.swing.JPanel	
-	 */
 	private JPanel getChartPanel() {
 		if (chartPanel == null) {
 			priceSeries = new TimeSeries("Price");
@@ -685,11 +319,6 @@ public class AnalyzerUI extends JFrame {
 		return chartPanel;
 	}
 
-	/**
-	 * This method initializes tableTabbedPane	
-	 * 	
-	 * @return javax.swing.JTabbedPane	
-	 */
 	private JTabbedPane getTableTabbedPane() {
 		if (tableTabbedPane == null) {
 			tableTabbedPane = new JTabbedPane(JTabbedPane.BOTTOM);
@@ -699,11 +328,6 @@ public class AnalyzerUI extends JFrame {
 		return tableTabbedPane;
 	}
 
-	/**
-	 * This method initializes screeningScrollPane	
-	 * 	
-	 * @return javax.swing.JScrollPane	
-	 */
 	private JScrollPane getScreeningScrollPane() {
 		if (screeningScrollPane == null) {
 			screeningScrollPane = new JScrollPane();
@@ -712,11 +336,6 @@ public class AnalyzerUI extends JFrame {
 		return screeningScrollPane;
 	}
 
-	/**
-	 * This method initializes screeningTable	
-	 * 	
-	 * @return javax.swing.JTable	
-	 */
 	public JTable getScreeningTable() {
 		if (screeningTable == null) {
 			screeningTable = new JTable(createTableModel());
@@ -758,11 +377,6 @@ public class AnalyzerUI extends JFrame {
 		
 	}
 
-	/**
-	 * This method initializes quotesScrollPane	
-	 * 	
-	 * @return javax.swing.JScrollPane	
-	 */
 	private JScrollPane getQuotesScrollPane() {
 		if (quotesScrollPane == null) {
 			quotesScrollPane = new JScrollPane();
@@ -771,11 +385,6 @@ public class AnalyzerUI extends JFrame {
 		return quotesScrollPane;
 	}
 
-	/**
-	 * This method initializes quotesTable	
-	 * 	
-	 * @return javax.swing.JTable	
-	 */
 	private JTable getQuotesTable() {
 		if (quotesTable == null) {
 			quotesTable = new JTable(createTableModel());
@@ -795,11 +404,6 @@ public class AnalyzerUI extends JFrame {
 		return dataModel;
 	}
 
-	/**
-	 * This method initializes statusBarLabel	
-	 * 	
-	 * @return javax.swing.JLabel	
-	 */
 	private JLabel getStatusBarLabel() {
 		if (statusBarLabel == null) {
 			statusBarLabel = new JLabel();
@@ -808,11 +412,6 @@ public class AnalyzerUI extends JFrame {
 		return statusBarLabel;
 	}
 
-	/**
-	 * This method initializes stockComboBox	
-	 * 	
-	 * @return javax.swing.JComboBox	
-	 */
 	private JComboBox getStockComboBox() {
 		if (stockComboBox == null) {
 			stockComboBox = new JComboBox();
@@ -848,18 +447,11 @@ public class AnalyzerUI extends JFrame {
 		return stockComboBox;
 	}
 
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) {
-//		SwingUtilities.invokeLater(new Runnable() {
-//			public void run() {
-				AnalyzerUI thisClass = new AnalyzerUI(new StockModel());
-				thisClass.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-				thisClass.setVisible(true);
-				thisClass.updateStocksData();
-//			}
-//		});
+		AnalyzerUI ui = new AnalyzerUI(new StockModel());
+		ui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		ui.setVisible(true);
+		ui.updateStocksData();
 	}
 
 	/**
@@ -869,9 +461,6 @@ public class AnalyzerUI extends JFrame {
 		super();
 		initialize();
 		this.dataModel = m;
-//		updateStocksData();
-//		this.stocks = this.dataModel.getAllStocks();
-//		this.stockMap = this.dataModel.getStockMap();
 	}
 	
 	private void updateStocksData() {
@@ -881,11 +470,6 @@ public class AnalyzerUI extends JFrame {
 		setStatusBar("Finished updating stock data");
 	}
 
-	/**
-	 * This method initializes this
-	 * 
-	 * @return void
-	 */
 	private void initialize() {
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -904,11 +488,6 @@ public class AnalyzerUI extends JFrame {
 		this.setTitle("Analyzer UI");
 	}
 
-	/**
-	 * This method initializes jContentPane
-	 * 
-	 * @return javax.swing.JPanel
-	 */
 	private JPanel getJContentPane() {
 		if (jContentPane == null) {
 			jContentPane = new JPanel(new BorderLayout());
