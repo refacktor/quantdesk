@@ -78,7 +78,7 @@ public class AnalyzerUI extends JFrame {
 	private JTable screeningTable = null;
 	private JScrollPane quotesScrollPane = null;
 	private JTable quotesTable = null;
-	private DataModel dataModel = null;
+	private StockModel dataModel;
 	private java.util.List<Stock> stocks = null;
 	private Map<String, Stock> stockMap = null;
 	private TimeSeries priceSeries;
@@ -320,7 +320,7 @@ public class AnalyzerUI extends JFrame {
 		return quotesTable;
 	}
 	
-	public DataModel getDataModel() {
+	public StockModel getDataModel() {
 		return dataModel;
 	}
 
@@ -368,8 +368,7 @@ public class AnalyzerUI extends JFrame {
 	}
 
 	public static void main(String[] args) {
-		AnalyzerUI ui = new AnalyzerUI(new StockModel());
-		ui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		AnalyzerUI ui = new AnalyzerUI();
 		ui.setVisible(true);
 		ui.updateStocksData();
 	}
@@ -377,20 +376,8 @@ public class AnalyzerUI extends JFrame {
 	/**
 	 * This is the default constructor
 	 */
-	public AnalyzerUI(DataModel m) {
-		super();
-		initialize();
-		this.dataModel = m;
-	}
-	
-	private void updateStocksData() {
-		setStatusBar("Updating stock data");
-		this.stocks = this.dataModel.getAllStocks();
-		this.stockMap = this.dataModel.getStockMap();
-		setStatusBar("Finished updating stock data");
-	}
-
-	private void initialize() {
+	public AnalyzerUI() {
+		dataModel = new StockModel(this);
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (ClassNotFoundException e) {
@@ -405,7 +392,13 @@ public class AnalyzerUI extends JFrame {
 		this.setSize(1057, 633);
 		this.setJMenuBar(getMainMenuBar());
 		this.setContentPane(getJContentPane());
-		this.setTitle("Analyzer UI");
+		this.setTitle("QuantDesk Integrated Desktop");
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	}
+	
+	private void updateStocksData() {
+		this.stocks = dataModel.getAllStocks();
+		this.stockMap = dataModel.getStockMap();
 	}
 
 	private JPanel getJContentPane() {
@@ -437,6 +430,13 @@ public class AnalyzerUI extends JFrame {
 		if (n < min) n = min;
 		progressBar.setValue(n);
         }
+
+	public synchronized void setStatusInfo(int min, int value, int max, String text) {
+		setProgressBarLimits(min, max);
+		setProgressBarValue(value);
+		setStatusBar(text);
+		this.repaint();
+	}
 	
 	private class PlotUpdater extends Thread {
 		private Stock stock;

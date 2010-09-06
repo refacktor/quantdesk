@@ -244,7 +244,7 @@ public class AdvancedTabPanel extends JPanel {
 			context.evaluateString(scope, func, "<cmd>", 1, null);
 			Object o = scope.get("callback", scope);
 			if(o instanceof Function) {
-				for(Stock s : parent.getDataModel().getAllStocks()) {
+				for(Stock s : parent.getDataModel().getAllStocks()) { 
 					if(shouldStop) {
 						return;
 					}
