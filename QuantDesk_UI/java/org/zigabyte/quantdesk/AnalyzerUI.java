@@ -26,16 +26,16 @@ public class AnalyzerUI extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private JPanel jContentPane = null;
 	private JMenuBar mainMenuBar = null;
-	private JMenu fileMenu = null;
-	private JMenu editMenu = null;
-	private JMenu viewMenu = null;
-	private JMenu portfolioMenu = null;
-	private JMenu quotesMenu = null;
-	private JMenu screeningMenu = null;
-	private JMenu researchMenu = null;
-	private JMenu favoritesMenu = null;
-	private JMenu toolsMenu = null;
-	private JMenu helpMenu = null;
+	private JMenu fileMenu = new JMenu("File");
+	private JMenu editMenu = new JMenu("Edit");
+	private JMenu viewMenu = new JMenu("View");
+	private JMenu portfolioMenu = new JMenu("Portfolio");
+	private JMenu quotesMenu = new JMenu("Quotes");
+	private JMenu screeningMenu = new JMenu("Screening");
+	private JMenu researchMenu = new JMenu("Research");
+	private JMenu favoritesMenu = new JMenu("Favorites");
+	private JMenu toolsMenu = new JMenu("Tools");
+	private JMenu helpMenu = new JMenu("Help");
 	private JPanel toolBarPanel = null;
 
 	private JToolBar navigationToolBar = null;
@@ -91,98 +91,18 @@ public class AnalyzerUI extends JFrame {
 	private JMenuBar getMainMenuBar() {
 		if (mainMenuBar == null) {
 			mainMenuBar = new JMenuBar();
-			mainMenuBar.add(getFileMenu());
-			mainMenuBar.add(getEditMenu());
-			mainMenuBar.add(getViewMenu());
-			mainMenuBar.add(getPortfolioMenu());
-			mainMenuBar.add(getQuotesMenu());
-			mainMenuBar.add(getScreeningMenu());
-			mainMenuBar.add(getResearchMenu());
-			mainMenuBar.add(getFavoritesMenu());
-			mainMenuBar.add(getToolsMenu());
-			mainMenuBar.add(getHelpMenu());
+			mainMenuBar.add(fileMenu);
+			mainMenuBar.add(editMenu);
+			mainMenuBar.add(viewMenu);
+			mainMenuBar.add(portfolioMenu);
+			mainMenuBar.add(quotesMenu);
+			mainMenuBar.add(screeningMenu);
+			mainMenuBar.add(researchMenu);
+			mainMenuBar.add(favoritesMenu);
+			mainMenuBar.add(toolsMenu);
+			mainMenuBar.add(helpMenu);
 		}
 		return mainMenuBar;
-	}
-
-	private JMenu getFileMenu() {
-		if (fileMenu == null) {
-			fileMenu = new JMenu();
-			fileMenu.setText("File");
-		}
-		return fileMenu;
-	}
-
-	private JMenu getEditMenu() {
-		if (editMenu == null) {
-			editMenu = new JMenu();
-			editMenu.setText("Edit");
-		}
-		return editMenu;
-	}
-
-	private JMenu getViewMenu() {
-		if (viewMenu == null) {
-			viewMenu = new JMenu();
-			viewMenu.setText("View");
-		}
-		return viewMenu;
-	}
-
-	private JMenu getPortfolioMenu() {
-		if (portfolioMenu == null) {
-			portfolioMenu = new JMenu();
-			portfolioMenu.setText("Portfolio");
-		}
-		return portfolioMenu;
-	}
-
-	private JMenu getQuotesMenu() {
-		if (quotesMenu == null) {
-			quotesMenu = new JMenu();
-			quotesMenu.setText("Quotes");
-		}
-		return quotesMenu;
-	}
-
-	private JMenu getScreeningMenu() {
-		if (screeningMenu == null) {
-			screeningMenu = new JMenu();
-			screeningMenu.setText("Screening");
-		}
-		return screeningMenu;
-	}
-
-	private JMenu getResearchMenu() {
-		if (researchMenu == null) {
-			researchMenu = new JMenu();
-			researchMenu.setText("Research");
-		}
-		return researchMenu;
-	}
-
-	private JMenu getFavoritesMenu() {
-		if (favoritesMenu == null) {
-			favoritesMenu = new JMenu();
-			favoritesMenu.setText("Favorites");
-		}
-		return favoritesMenu;
-	}
-
-	private JMenu getToolsMenu() {
-		if (toolsMenu == null) {
-			toolsMenu = new JMenu();
-			toolsMenu.setText("Tools");
-		}
-		return toolsMenu;
-	}
-
-	private JMenu getHelpMenu() {
-		if (helpMenu == null) {
-			helpMenu = new JMenu();
-			helpMenu.setText("Help");
-		}
-		return helpMenu;
 	}
 
 	private JPanel getToolBarPanel() {
