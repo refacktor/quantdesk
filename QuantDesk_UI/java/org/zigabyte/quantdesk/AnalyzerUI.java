@@ -1,34 +1,10 @@
 package org.zigabyte.quantdesk;
 
-import java.awt.BorderLayout;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTable;
-import javax.swing.JToolBar;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumnModel;
-import javax.swing.table.TableModel;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Map;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import javax.swing.table.*;
+import java.util.*;
 
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -40,15 +16,14 @@ import org.jfree.chart.plot.Plot;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.StandardXYItemRenderer;
 import org.jfree.chart.renderer.xy.XYBarRenderer;
+
 import org.jfree.data.time.Day;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
+
 import org.yccheok.jstock.engine.Stock;
-import javax.swing.JLabel;
-import javax.swing.JComboBox;
 
 public class AnalyzerUI extends JFrame {
-
 	private static final long serialVersionUID = 1L;
 	private JPanel jContentPane = null;
 	private JMenuBar mainMenuBar = null;
@@ -93,13 +68,15 @@ public class AnalyzerUI extends JFrame {
 	private JPanel advancedPanel = null;
 	private JPanel watchListsPanel = null;
 	private JPanel chartPanel = null;
+        private JPanel bottomPanel = new JPanel(new BorderLayout());
+        private JProgressBar progressBar = new JProgressBar(SwingConstants.HORIZONTAL, 0, 100);
 	private JTabbedPane tableTabbedPane = null;
 	private JScrollPane screeningScrollPane = null;
 	private JTable screeningTable = null;
 	private JScrollPane quotesScrollPane = null;
 	private JTable quotesTable = null;
 	private DataModel dataModel = null;
-	private List<Stock> stocks = null;
+	private java.util.List<Stock> stocks = null;
 	private Map<String, Stock> stockMap = null;
 	private TimeSeries priceSeries;
 	private TimeSeries volumeSeries;  //  @jve:decl-index=0:
@@ -875,13 +852,14 @@ public class AnalyzerUI extends JFrame {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
+//		SwingUtilities.invokeLater(new Runnable() {
+//			public void run() {
 				AnalyzerUI thisClass = new AnalyzerUI(new StockModel());
 				thisClass.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 				thisClass.setVisible(true);
-			}
-		});
+				thisClass.updateStocksData();
+//			}
+//		});
 	}
 
 	/**
@@ -891,9 +869,9 @@ public class AnalyzerUI extends JFrame {
 		super();
 		initialize();
 		this.dataModel = m;
-		updateStocksData();
-		this.stocks = this.dataModel.getAllStocks();
-		this.stockMap = this.dataModel.getStockMap();
+//		updateStocksData();
+//		this.stocks = this.dataModel.getAllStocks();
+//		this.stockMap = this.dataModel.getStockMap();
 	}
 	
 	private void updateStocksData() {
@@ -933,18 +911,33 @@ public class AnalyzerUI extends JFrame {
 	 */
 	private JPanel getJContentPane() {
 		if (jContentPane == null) {
-			jContentPane = new JPanel();
-			jContentPane.setLayout(new BorderLayout());
+			jContentPane = new JPanel(new BorderLayout());
 			jContentPane.add(getToolBarPanel(), BorderLayout.NORTH);
 			jContentPane.add(getMainSplitPane(), BorderLayout.CENTER);
-			jContentPane.add(getStatusBarLabel(), BorderLayout.SOUTH);
+			jContentPane.add(bottomPanel, BorderLayout.SOUTH);
+                        bottomPanel.add(getStatusBarLabel(), BorderLayout.NORTH);
+                        bottomPanel.add(progressBar, BorderLayout.SOUTH);
 		}
 		return jContentPane;
 	}
 	
 	public synchronized void setStatusBar(String text) {
-		getStatusBarLabel().setText(text);
+		getStatusBarLabel().setText(text); System.out.println("STATUS: " + text);
 	}
+
+	public synchronized void setProgressBarLimits(int min, int max) {
+		// Prevent min>max situation by caller's mistake:
+		progressBar.setMinimum(Math.min(min, max));
+		progressBar.setMaximum(Math.max(min, max));
+	}
+	
+	public synchronized void setProgressBarValue(int n) {
+		int max = progressBar.getMaximum();
+		int min = progressBar.getMinimum();
+		if (n > max) n = max;
+		if (n < min) n = min;
+		progressBar.setValue(n);
+        }
 	
 	private class PlotUpdater extends Thread {
 		private Stock stock;
