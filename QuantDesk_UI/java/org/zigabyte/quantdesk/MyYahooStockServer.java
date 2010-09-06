@@ -1,24 +1,4 @@
 package org.zigabyte.quantdesk;
-/*
- * JStock - Free Stock Market Software
- * Copyright (C) 2009 Yan Cheng CHEOK <yccheok@yahoo.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- */
-
-
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -51,10 +31,6 @@ import org.yccheok.jstock.engine.Symbol;
 import org.yccheok.jstock.engine.Utils;
 import org.yccheok.jstock.engine.YahooStockServer;
 
-/**
- *
- * @author yccheok
- */
 public class MyYahooStockServer extends AbstractYahooStockServer {
 	
 	private static final String YAHOO_STOCK_FORMAT = "&f=snsxspsosl1shsgsvsc1sp2sk3sbsb6sasa5sd1st1sdsy";
@@ -63,7 +39,17 @@ public class MyYahooStockServer extends AbstractYahooStockServer {
 	private static final double STABILITY_RATE = 90.0;
 	
 	private Country country;
-	
+
+	private AnalyzerUI view;
+	public void setView(AnalyzerUI view) {
+		this.view = view;
+	}
+	private void reportProgress(int value, int max, String message) {
+		if (view!=null) {
+			view.setStatusInfo(0, value, max, message);
+		}
+	}
+
     @Override
     protected String getYahooCSVBasedURL() {
         return "http://finance.yahoo.com/d/quotes.csv?s=";
@@ -73,7 +59,6 @@ public class MyYahooStockServer extends AbstractYahooStockServer {
         super(country);
         this.country = country;
         baseURL = servers.get(country);
-        
         if (baseURL == null) {
             throw new java.lang.IllegalArgumentException("Illegal country as argument (" + country +")");
         }        
@@ -84,17 +69,13 @@ public class MyYahooStockServer extends AbstractYahooStockServer {
     // use List is more convinient for us to iterate.
     private List<URL> getURLs(String respond, List<URL> visited) {
         List<URL> urls = new ArrayList<URL>();
-
         final Matcher matcher = urlPattern.matcher(respond);
-        
         while (matcher.find()){
             for (int j = 1; j <= matcher.groupCount(); j++) {
                 final String string = matcher.group(j);
-
                 try {
                     URL url = new URL(baseURL, string);
-                    
-                    if ((urls.contains(url) == false) && (visited.contains(url) == false)) {
+                    if (!urls.contains(url) && !visited.contains(url)) { // TODO Make url and visited Sets instead of Lists and save on "contains()" checks?
                         urls.add(url);
                     }
                 } catch (MalformedURLException ex) {
@@ -102,14 +83,14 @@ public class MyYahooStockServer extends AbstractYahooStockServer {
                 }                                
             }
         }
-        
         return urls;
     }
     
     @Override
     public List<Stock> getAllStocks() throws StockNotFoundException {
+	    long start = System.currentTimeMillis();
+	    reportProgress(0, 1, "Downloading stock data...");
         List<URL> visited = new ArrayList<URL>();
-        
         List<Stock> stocks = new ArrayList<Stock>();
 
         // Use Set, for safety purpose to avoid duplication.
@@ -119,7 +100,7 @@ public class MyYahooStockServer extends AbstractYahooStockServer {
 
         for (int i = 0; i < visited.size(); i++) {
             final String location = visited.get(i).toString();
-
+            reportProgress(i, visited.size(), "Downloading stock data: " + i + " of " + visited.size() + " URLs processed. " + stocks.size() + " stock symbols downloaded so far. " + (System.currentTimeMillis()-start) + " ms elapsed.");
             final String respond = getResponseBodyAsStringBasedOnProxyAuthOption(location);
 
             if (respond == null) {
@@ -131,7 +112,7 @@ public class MyYahooStockServer extends AbstractYahooStockServer {
 
             for (Stock stock : tmpStocks) {
                 if (codes.add(stock.getCode())) {
-                    stocks.add(stock);
+                    stocks.add(stock); 
                 }
             }
 
@@ -144,7 +125,7 @@ public class MyYahooStockServer extends AbstractYahooStockServer {
 
             notify(this, stocks.size());
         }
-
+	reportProgress(1, 1, "Downloaded " + stocks.size() + " stock symbols from " + visited.size() + " URLs in " + (System.currentTimeMillis()-start) + " ms.");
         return stocks;
     }
 

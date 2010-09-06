@@ -1,17 +1,9 @@
 package org.zigabyte.quantdesk;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.text.DateFormat;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.jfree.util.Log;
 import org.yccheok.jstock.engine.Code;
@@ -27,17 +19,18 @@ import org.yccheok.jstock.engine.Stock.Industry;
 import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.CSVWriter;
 
-public class StockModel extends DataModel {
+public class StockModel extends Observable {
 
 	private Map<String, Stock> stocksMap = null;
 	private List<Stock> stocks = null;
 	private String stockFileLoc = "data" + File.separator + "stocks.csv";
 	private Country country = Country.UnitedState;
+	private AnalyzerUI view = null;
 	
-	public StockModel() {
+	public StockModel(AnalyzerUI view) {
+		this.view = view;
 	}
 	
-	@Override
 	public List<Stock> getAllStocks() {
 		if(stocks == null) {
 			stocks = new ArrayList<Stock>();
@@ -106,9 +99,8 @@ public class StockModel extends DataModel {
 				catch(FileNotFoundException fnfe) {
 					Log.error(null, fnfe);
 				}
-			}
-			else {  
-				MyYahooStockServer m = new MyYahooStockServer(country); 
+			} else {  System.out.print("MyYahooStockServer...");
+				MyYahooStockServer m = new MyYahooStockServer(country); m.setView(view); System.out.println(" object created.");
 				try {
 					List<Stock> temp = m.getAllStocks(); 
 					for(Stock s : temp) { 
@@ -116,15 +108,14 @@ public class StockModel extends DataModel {
 						stocksMap.put(s.getCode().toString(), s);
 					}
 					writeStockData();
-				}
-				catch(StockNotFoundException snfe) {
+				} catch(StockNotFoundException snfe) {
+					System.out.println("Stock not found: " + snfe.getMessage());
 				}
 			}
 		}
 		return stocks;
 	}
 
-	@Override
 	public Stock getStock(String code) {
 		MyYahooStockServer server = new MyYahooStockServer(Country.UnitedState);
 		Stock s;
@@ -137,7 +128,6 @@ public class StockModel extends DataModel {
 		return s;
 	}
 
-	@Override
 	public StockHistoryServer getStockData(Stock s) {
 		try {
 			MyYahooStockHistoryServer server = new MyYahooStockHistoryServer(country, s.getCode());
@@ -148,7 +138,6 @@ public class StockModel extends DataModel {
 		}
 	}
 
-	@Override
 	public Map<String, Stock> getStockMap() {
 		if(stocksMap == null) {
 			getAllStocks();
@@ -207,10 +196,4 @@ public class StockModel extends DataModel {
 			ioe.printStackTrace();
 		}
 	}
-	
-	@Override
-	public void stop() {
-		// TODO Auto-generated method stub
-	}
-
 }
