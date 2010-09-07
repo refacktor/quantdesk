@@ -326,8 +326,7 @@ public class AnalyzerUI extends JFrame {
 
 	private JLabel getStatusBarLabel() {
 		if (statusBarLabel == null) {
-			statusBarLabel = new JLabel();
-			statusBarLabel.setText("JLabel");
+			statusBarLabel = new JLabel("Ready");
 		}
 		return statusBarLabel;
 	}
