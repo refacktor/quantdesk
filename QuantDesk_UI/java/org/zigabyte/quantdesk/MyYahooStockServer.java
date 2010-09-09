@@ -1,17 +1,9 @@
 package org.zigabyte.quantdesk;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -88,27 +80,28 @@ public class MyYahooStockServer extends AbstractYahooStockServer {
     
     @Override
     public List<Stock> getAllStocks() throws StockNotFoundException {
+	    final int EXPECTED_TOTAL_STOCK_QTY = 6587;
 	    long start = System.currentTimeMillis();
-	    reportProgress(0, 1, "Downloading stock data...");
-        List<URL> visited = new ArrayList<URL>();
-        List<Stock> stocks = new ArrayList<Stock>();
-
-        // Use Set, for safety purpose to avoid duplication.
-        Set<Code> codes = new HashSet<Code>();
-
-        visited.add(baseURL);
+	    reportProgress(0, 1, "Downloading stock data... (expected stock quantity - " + EXPECTED_TOTAL_STOCK_QTY);
+	    
+	    List<URL> visited = new ArrayList<URL>();
+	    List<Stock> stocks = new ArrayList<Stock>();
+	    Set<Code> codes = new HashSet<Code>(); // use Set to avoid duplication
+	    visited.add(baseURL);
 
         for (int i = 0; i < visited.size(); i++) {
-            final String location = visited.get(i).toString();
-            reportProgress(i, visited.size(), "Downloading stock data: " + i + " of " + visited.size() + " URLs processed. " + stocks.size() + " stock symbols downloaded so far. " + (System.currentTimeMillis()-start) + " ms elapsed.");
-            final String respond = getResponseBodyAsStringBasedOnProxyAuthOption(location);
+		String strElapsed = ((System.currentTimeMillis()-start)/1000) + " seconds elapsed.";
+		if (stocks.size()<EXPECTED_TOTAL_STOCK_QTY) {
+			reportProgress(stocks.size(), EXPECTED_TOTAL_STOCK_QTY, "Downloading stock data: " + stocks.size() + " (" + (stocks.size()*100/EXPECTED_TOTAL_STOCK_QTY) + "%) downloaded, " + EXPECTED_TOTAL_STOCK_QTY + " expected. " + strElapsed);
+		} else {
+			reportProgress(i, visited.size(), "Downloading stock data: " + i + " of " + visited.size() + " URLs processed. " + stocks.size() + " stock symbols downloaded so far. " + strElapsed);
+		}
 
-            if (respond == null) {
-                continue;
-            }
-
-            final List<Stock> tmpStocks = getStocks(respond);
-            final List<URL> urls = getURLs(respond, visited);
+		final String location = visited.get(i).toString();
+		final String respond = getResponseBodyAsStringBasedOnProxyAuthOption(location);
+		if (respond==null) continue;
+		final List<Stock> tmpStocks = getStocks(respond);
+		final List<URL> urls = getURLs(respond, visited);
 
             for (Stock stock : tmpStocks) {
                 if (codes.add(stock.getCode())) {
@@ -125,7 +118,7 @@ public class MyYahooStockServer extends AbstractYahooStockServer {
 
             notify(this, stocks.size());
         }
-	reportProgress(1, 1, "Downloaded " + stocks.size() + " stock symbols from " + visited.size() + " URLs in " + (System.currentTimeMillis()-start) + " ms.");
+	reportProgress(1, 1, "Downloaded " + stocks.size() + " stock symbols from " + visited.size() + " URLs in " + ((System.currentTimeMillis()-start)/1000) + " seconds.");
         return stocks;
     }
 
