@@ -93,6 +93,7 @@ public class AnalyzerUI extends JFrame {
 			mainMenuBar = new JMenuBar();
 			mainMenuBar.add(fileMenu);
 			mainMenuBar.add(editMenu);
+			viewMenu.add(SwingUtil.getLafMenu(this));
 			mainMenuBar.add(viewMenu);
 			mainMenuBar.add(portfolioMenu);
 			mainMenuBar.add(quotesMenu);
@@ -436,7 +437,7 @@ public class AnalyzerUI extends JFrame {
 		setStatusBar(text);
 		this.repaint();
 	}
-	
+
 	private class PlotUpdater extends Thread {
 		private Stock stock;
 		public PlotUpdater(Stock stock) {
