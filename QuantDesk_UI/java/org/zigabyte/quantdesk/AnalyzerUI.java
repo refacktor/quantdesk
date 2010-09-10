@@ -88,13 +88,32 @@ public class AnalyzerUI extends JFrame {
 	private TimeSeriesCollection priceDataset;
 	private TimeSeriesCollection volumeDataset;
 
+	private Action actionExit = new ActionExit();
+	class ActionExit extends AbstractAction {
+		public ActionExit() {
+			super("Exit");
+		        putValue(SHORT_DESCRIPTION, "Exits the application");
+			//putValue(MNEMONIC_KEY, KeyEvent.VK_X);
+			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke('X', InputEvent.CTRL_MASK)); // InputEvent.CTRL_MASK);
+		}
+		public void actionPerformed(ActionEvent e) {
+			System.out.println("Action:Exit");
+			System.exit(0);
+		}
+	};
+
 	private JMenuBar getMainMenuBar() {
 		if (mainMenuBar == null) {
 			mainMenuBar = new JMenuBar();
+
 			mainMenuBar.add(fileMenu);
+			fileMenu.add(new JMenuItem(actionExit));
+
 			mainMenuBar.add(editMenu);
-			viewMenu.add(SwingUtil.getLafMenu(this));
+			
 			mainMenuBar.add(viewMenu);
+			viewMenu.add(SwingUtil.getLafMenu(this));
+			
 			mainMenuBar.add(portfolioMenu);
 			mainMenuBar.add(quotesMenu);
 			mainMenuBar.add(screeningMenu);
