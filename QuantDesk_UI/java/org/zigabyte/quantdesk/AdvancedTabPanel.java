@@ -18,10 +18,10 @@ public class AdvancedTabPanel extends JPanel {
 	private JButton btnExecute = null;
 	private JButton btnModify = null;
 	private JButton btnExport = null;
-	private JTextArea javascriptTextArea = null;
+	private JTextArea txtJavaScript = new JTextArea("history.correlation('DELL') > 0.8\n&&\nstock.dividendYield > 1.0");
 	private JButton btnStart = null;
 	private JButton btnStop = null;
-	private JScrollPane javascriptScrollPane = null;
+	private JScrollPane paneJavaScript = null;
 	private boolean shouldStop = false;
 	private AnalyzerUI parent;
 
@@ -72,17 +72,17 @@ public class AdvancedTabPanel extends JPanel {
 		GridBagConstraints gridBagConstraints = new GridBagConstraints();
 		gridBagConstraints.gridx = 0;
 		gridBagConstraints.gridy = 0;
-		this.setLayout(new GridBagLayout());
-		this.add(getAddFilterButton(), gridBagConstraints);
-		this.add(getCreateScreenButton(), gridBagConstraints1);
-		this.add(getAdvancedScreensTree(), gridBagConstraints2);
-		this.add(getExecuteButton(), gridBagConstraints3);
-		this.add(getModifyButton(), gridBagConstraints4);
-		this.add(getExportButton(), gridBagConstraints5);
-		this.add(getJavascriptScrollPane(), gridBagConstraints6);
-		this.add(getStartButton(), gridBagConstraints7);
-		this.add(getStopButton(), gridBagConstraints11);
-		this.add(new JLabel("JavaScript: "), gridBagConstraints12);
+		setLayout(new GridBagLayout());
+		add(getAddFilterButton(), gridBagConstraints);
+		add(getCreateScreenButton(), gridBagConstraints1);
+		add(getAdvancedScreensTree(), gridBagConstraints2);
+		add(getExecuteButton(), gridBagConstraints3);
+		add(getModifyButton(), gridBagConstraints4);
+		add(getExportButton(), gridBagConstraints5);
+		add(getJavascriptScrollPane(), gridBagConstraints6);
+		add(getStartButton(), gridBagConstraints7);
+		add(getStopButton(), gridBagConstraints11);
+		add(new JLabel("JavaScript: "), gridBagConstraints12);
 	}
 
 	/**
@@ -140,27 +140,18 @@ public class AdvancedTabPanel extends JPanel {
 	 */
 	private JButton getExportButton() {
 		if (btnExport == null) {
-			btnExport = new JButton();
-			btnExport.setText("Export Results");
+			btnExport = new JButton("Export Results");
 		}
 		return btnExport;
 	}
-
-	/**
-	 * This method initializes javascriptTextArea		
-	 */
-	private JTextArea getJavascriptTextArea() {
-		if (javascriptTextArea == null) {
-			javascriptTextArea = new JTextArea();
-		}
-		return javascriptTextArea;
-	}
 	
 	private JScrollPane getJavascriptScrollPane() {
-		if(javascriptScrollPane == null) {
-			javascriptScrollPane = new JScrollPane(getJavascriptTextArea());
+		if(paneJavaScript == null) {
+			paneJavaScript = new JScrollPane(txtJavaScript);
+			paneJavaScript.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+			paneJavaScript.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		}
-		return javascriptScrollPane;
+		return paneJavaScript;
 	}
 
 	/**
@@ -168,12 +159,10 @@ public class AdvancedTabPanel extends JPanel {
 	 */
 	private JButton getStartButton() {
 		if (btnStart == null) {
-			btnStart = new JButton();
-			btnStart.setText("Start");
+			btnStart = new JButton("Start");
 			btnStart.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
-					shouldStop = false;
-					new ScanningThread(javascriptTextArea.getText()).start();
+					new ScanningThread(txtJavaScript.getText()).start();
 				}
 			});
 		}
@@ -188,40 +177,37 @@ public class AdvancedTabPanel extends JPanel {
 		}
 		
 		public void run() {
-			if(shouldStop) {
-				return;
-			}
+			shouldStop = false;
 			DefaultTableModel m = (DefaultTableModel)parent.getScreeningTable().getModel();
 			int numRows = m.getRowCount();
 			for(int i = 0; i < numRows; i++) {
-				m.removeRow(0);
+				m.removeRow(0); // TODO: this is cleaning the table, should be put into a separate method
 			}
 			Context context = Context.enter();
 			String func = "function callback(stock, history) {\n  return " + script + "\n}";
 			Scriptable scope = context.initStandardObjects();
 			context.evaluateString(scope, func, "<cmd>", 1, null);
 			Object o = scope.get("callback", scope);
-			if(o instanceof Function) {
-				for(Stock s : parent.getDataModel().getAllStocks()) { 
-					if(shouldStop) {
-						return;
-					}
-					parent.setStatusBar("Scanning stock " + s.getCode().toString());
-					s = parent.getDataModel().getStock(s.getCode().toString());
-					MyYahooStockHistoryServer server = (MyYahooStockHistoryServer)parent.getDataModel().getStockData(s);
-					Function f = (Function)o;
-					if(server != null) {
-						Object r2 = f.call(context, scope, scope, new Object[] { s, server });
-						if(r2 instanceof Boolean && (Boolean)r2) {
-							if(shouldStop) {
-								return;
-							}
-							new SwingDataUpdater(s, parent).start();
+			if(!(o instanceof Function)) return;
+
+			for(Stock s : parent.getDataModel().getAllStocks()) {
+				if(shouldStop) return;
+				parent.setStatusBar("Scanning stock " + s.getCode().toString());
+				s = parent.getDataModel().getStock(s.getCode().toString());
+				MyYahooStockHistoryServer server = (MyYahooStockHistoryServer)parent.getDataModel().getStockData(s);
+				Function f = (Function)o;
+				if(server != null) {
+					Object r2 = f.call(context, scope, scope, new Object[] { s, server });
+					if(r2 instanceof Boolean && (Boolean)r2) {
+						if(shouldStop) {
+							return;
 						}
+						new SwingDataUpdater(s, parent).start();
 					}
 				}
-				parent.setStatusBar("Finished scanning stocks with Javascript");
 			}
+			parent.setStatusBar("Finished scanning stocks with JavaScript");
+
 		}
 	}
 
@@ -230,8 +216,7 @@ public class AdvancedTabPanel extends JPanel {
 	 */
 	private JButton getStopButton() {
 		if (btnStop == null) {
-			btnStop = new JButton();
-			btnStop.setText("Stop");
+			btnStop = new JButton("Stop");
 			btnStop.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
 					shouldStop = true;
