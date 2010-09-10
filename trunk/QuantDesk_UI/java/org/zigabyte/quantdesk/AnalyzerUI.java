@@ -88,19 +88,36 @@ public class AnalyzerUI extends JFrame {
 	private TimeSeriesCollection priceDataset;
 	private TimeSeriesCollection volumeDataset;
 
-	private Action actionExit = new ActionExit();
+	abstract class AnalyzerUiAction extends AbstractAction {
+		protected AnalyzerUI ui;
+		public AnalyzerUiAction(AnalyzerUI ui, String text) {
+			super(text);
+			this.ui = ui;
+		}
+	}
+
+	private Action actionExit = new ActionExit(this);
 	class ActionExit extends AbstractAction {
-		public ActionExit() {
+		public ActionExit(AnalyzerUI ui) {
 			super("Exit");
 		        putValue(SHORT_DESCRIPTION, "Exits the application");
-			//putValue(MNEMONIC_KEY, KeyEvent.VK_X);
-			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke('X', InputEvent.CTRL_MASK)); // InputEvent.CTRL_MASK);
+			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke('X', InputEvent.CTRL_MASK)); 
 		}
 		public void actionPerformed(ActionEvent e) {
 			System.out.println("Action:Exit");
 			System.exit(0);
 		}
 	};
+
+	private Action actionAbout = new ActionAbout(this);
+	class ActionAbout extends AnalyzerUiAction {
+		public ActionAbout(AnalyzerUI ui) {
+			super(ui, "About");
+		}
+		public void actionPerformed(ActionEvent e) {
+			JOptionPane.showMessageDialog(ui, "QuantDesk Integrated Desktop v0.1", "About", JOptionPane.INFORMATION_MESSAGE);
+		}
+	}
 
 	private JMenuBar getMainMenuBar() {
 		if (mainMenuBar == null) {
@@ -120,7 +137,9 @@ public class AnalyzerUI extends JFrame {
 			mainMenuBar.add(researchMenu);
 			mainMenuBar.add(favoritesMenu);
 			mainMenuBar.add(toolsMenu);
+			
 			mainMenuBar.add(helpMenu);
+			helpMenu.add(new JMenuItem(actionAbout));
 		}
 		return mainMenuBar;
 	}
