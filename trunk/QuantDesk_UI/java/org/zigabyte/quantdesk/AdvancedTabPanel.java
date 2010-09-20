@@ -18,7 +18,7 @@ public class AdvancedTabPanel extends JPanel {
 	private JButton btnExecute = null;
 	private JButton btnModify = null;
 	private JButton btnExport = null;
-	private JTextArea txtJavaScript = new JTextArea("history.correlation('DELL') > 0.8\n&&\nstock.dividendYield > 1.0");
+	private JTextArea txtJavaScript = new JTextArea("stock.dividendYield > 1.0\n&&\nhistory.correlation('DELL') > 0.8");
 	private JButton btnStart = null;
 	private JButton btnStop = null;
 	private JScrollPane paneJavaScript = null;
@@ -189,10 +189,17 @@ public class AdvancedTabPanel extends JPanel {
 			context.evaluateString(scope, func, "<cmd>", 1, null);
 			Object o = scope.get("callback", scope);
 			if(!(o instanceof Function)) return;
-
-			for(Stock s : parent.getDataModel().getAllStocks()) {
-				if(shouldStop) return;
-				parent.setStatusBar("Scanning stock " + s.getCode().toString());
+			final long start = System.currentTimeMillis();
+			parent.setStatusInfo(0, 0, 1, "Scanning stocks... ");
+			java.util.List<Stock> stocks = parent.getDataModel().getAllStocks();
+			final int stocksQty = stocks.size();
+			int i = 0;
+			for(Stock s : stocks) {
+				if(shouldStop) {
+					parent.setStatusInfo(0, 0, 1, "Stocks scanning aborted.");
+					return;
+				}
+				parent.setStatusInfo(0, i, stocksQty, "Scanning stock " + s.getCode().toString()  + " (" + s.getSymbol().toString() + "). " + i + " of " + stocksQty + " stocks scanned (" + (i*100/stocksQty) + "%). " + ((System.currentTimeMillis()-start)/1000) + " seconds elapsed.");
 				s = parent.getDataModel().getStock(s.getCode().toString());
 				MyYahooStockHistoryServer server = (MyYahooStockHistoryServer)parent.getDataModel().getStockData(s);
 				Function f = (Function)o;
@@ -205,8 +212,9 @@ public class AdvancedTabPanel extends JPanel {
 						new SwingDataUpdater(s, parent).start();
 					}
 				}
+				i++;
 			}
-			parent.setStatusBar("Finished scanning stocks with JavaScript");
+			parent.setStatusInfo(0, 1, 1, "Finished scanning stocks with JavaScript in " + ((System.currentTimeMillis()-start)/1000) + " seconds.");
 
 		}
 	}
