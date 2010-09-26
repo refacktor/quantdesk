@@ -2,16 +2,18 @@
 #labels Featured,Phase-Requirements
 
 = Applications =
-== Integrated Desktop ==
+== Main Desktop Application ==
   
-  * Currently this key feature does not yet exist.
+  * Downloads stock market data from Yahoo.
+  * The main desktop includes ability to scan for stocks meeting some criteria (Stock Screener).
+  * Integration with the other modules (Portfolio Optimizer and Strategy Lab) is not yet implemented.
 
 == Portfolio Optimizer ==
 
   * Takes list of symbols and arranges them in most-optimal portfolio (by Sharpe Ratio or Sortino Ratio) based on historical data.
   * This has a Yahoo Data Downloader built-in.
 
-== Trading Strategy Simulator ==
+== Trading Strategy Lab ==
 
   * Reads Metastock-format data.
   * Allows simulation of trading in an account, similar to Metastock, Wealth Lab, etc.
