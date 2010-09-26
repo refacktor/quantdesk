@@ -6,6 +6,8 @@
   
   * Downloads stock market data from Yahoo.
   * The main desktop includes ability to scan for stocks meeting some criteria (Stock Screener).
+  * Powerful Stock Screener uses Javascript to enable user to define complex criteria.
+  * Includes advanced criteria such as Correlation between different stocks, and Dividend Frequency.
   * Integration with the other modules (Portfolio Optimizer and Strategy Lab) is not yet implemented.
 
 == Portfolio Optimizer ==
